@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RT Atelier - 舞蹈课程预订</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 统一的 Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0A1A38', // 深蓝色
+                        secondary: '#D4AF37', // 金色
+                        accent: '#4A90E2', // 浅蓝色
+                        success: '#27AE60', // 绿色
+                        danger: '#E74C3C', // 红色
+                        gray: {
+                            light: '#F8F9FA',
+                            medium: '#95A5A6',
+                            dark: '#333333'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                        'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .glass-effect {
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+        }
+        
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b39020;
+        }
+        
+        /* 页面过渡动画 */
+        .page-transition {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .page-enter {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        .page-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* 日历样式 */
+        .calendar-day {
+            min-height: 100px;
+            transition: all 0.2s ease;
+        }
+        .calendar-day:hover {
+            background-color: rgba(212, 175, 55, 0.1);
+        }
+        .calendar-day.today {
+            border: 2px solid #D4AF37;
+        }
+        .calendar-day.has-event {
+            position: relative;
+        }
+        .calendar-day.has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #D4AF37;
+        }
+        
+        /* 课程卡片样式 */
+        .course-card {
+            transition: all 0.3s ease;
+        }
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--tw-shadow-card-hover);
+        }
+        
+        /* 按钮样式 */
+        .btn-primary {
+            @apply bg-primary text-white py-2 px-4 rounded-lg hover:bg-opacity-90 transition-all-300;
+        }
+        .btn-secondary {
+            @apply bg-secondary text-white py-2 px-4 rounded-lg hover:bg-opacity-90 transition-all-300;
+        }
+        .btn-accent {
+            @apply bg-accent text-white py-2 px-4 rounded-lg hover:bg-opacity-90 transition-all-300;
+        }
+        .btn-success {
+            @apply bg-success text-white py-2 px-4 rounded-lg hover:bg-opacity-90 transition-all-300;
+        }
+        .btn-danger {
+            @apply bg-danger text-white py-2 px-4 rounded-lg hover:bg-opacity-90 transition-all-300;
+        }
+    </style>
+</head>
+<body class="bg-gray-light min-h-screen flex flex-col">
+    <!-- 顶部导航栏 -->
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/8826078d8b784cd8b0f02cd24b48e9b9.png~tplv-a9rns2rl98-24:720:720.png?lk3s=8e244e95&rcl=2026031814164451A34FA1AA0C5668D71A&rrcfp=8a172a1a&x-expires=1774419404&x-signature=KfGqcLbdk2wHxCiUzd6e0HE5kSo%3D" 
+                     alt="RT Atelier Logo" 
+                     class="h-10 w-10 object-contain">
+                <h1 class="text-xl font-bold" data-i18n="app.title">RT Atelier</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="lang-toggle" class="text-white hover:text-secondary transition-all-300">
+                    <i class="fa fa-globe mr-1"></i>
+                    <span data-i18n="nav.language">语言</span>
+                </button>
+                <div id="language-dropdown" class="hidden absolute top-16 right-4 bg-primary rounded-lg shadow-lg p-2 z-50">
+                    <button class="language-option block w-full text-left px-4 py-2 hover:bg-opacity-80 text-white rounded" data-lang="zh-CN">简体中文</button>
+                    <button class="language-option block w-full text-left px-4 py-2 hover:bg-opacity-80 text-white rounded" data-lang="zh-TW">繁體中文</button>
+                    <button class="language-option block w-full text-left px-4 py-2 hover:bg-opacity-80 text-white rounded" data-lang="en-US">English</button>
+                </div>
+                <button id="user-profile" class="flex items-center space-x-1 text-white hover:text-secondary transition-all-300">
+                    <i class="fa fa-user-circle-o text-xl"></i>
+                    <span data-i18n="nav.profile">个人中心</span>
+                </button>
+            </div>
+        </div>
+        <nav class="bg-primary bg-opacity-80">
+            <div class="container mx-auto px-4">
+                <ul class="flex space-x-6 overflow-x-auto">
+                    <li>
+                        <a href="#" class="nav-link block py-3 px-2 text-secondary border-b-2 border-secondary" data-page="calendar" data-i18n="nav.calendar">日历视图</a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link block py-3 px-2 text-white hover:text-secondary transition-all-300" data-page="courses" data-i18n="nav.courses">课程列表</a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link block py-3 px-2 text-white hover:text-secondary transition-all-300" data-page="bookings" data-i18n="nav.myBookings">我的预订</a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link block py-3 px-2 text-white hover:text-secondary transition-all-300" data-page="settings" data-i18n="nav.settings">设置</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 主内容区域 -->
+    <main class="flex-grow container mx-auto px-4 py-6">
+        <!-- 日历视图页面 -->
+        <section id="calendar-page" class="page-content page-transition">
+            <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <h2 class="text-2xl font-bold text-primary" data-i18n="calendar.title">课程日历</h2>
+                <div class="flex flex-wrap gap-2">
+                    <div class="relative">
+                        <input type="text" id="calendar-search" placeholder="搜索课程..." class="pl-8 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary">
+                        <i class="fa fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button id="filter-btn" class="btn-secondary flex items-center">
+                        <i class="fa fa-filter mr-1"></i>
+                        <span data-i18n="calendar.filter">筛选</span>
+                    </button>
+                    <button id="add-booking-btn" class="btn-primary flex items-center">
+                        <i class="fa fa-plus mr-1"></i>
+                        <span data-i18n="calendar.addBooking">新增预订</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 日历控件 -->
+            <div class="bg-white rounded-lg shadow-card p-4 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <button id="prev-month" class="text-primary hover:text-secondary transition-all-300">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <h3 id="current-month" class="text-xl font-semibold text-primary">2025年7月</h3>
+                    <button id="next-month" class="text-primary hover:text-secondary transition-all-300">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+                
+                <!-- 星期标题 -->
+                <div class="grid grid-cols-7 gap-1 mb-1">
+                    <div class="text-center py-2 font-medium text-gray-dark" data-i18n="calendar.sunday">日</div>
+                    <div class="text-center py-2 font-medium text-gray-dark" data-i18n="calendar.monday">一</div>
+                    <div class="text-center py-2 font-medium text-gray-dark" data-i18n="calendar.tuesday">二</div>
+                    <div class="text-center py-2 font-medium text-gray-dark" data-i18n="calendar.wednesday">三</div>
+                    <div class="text-center py-2 font-medium text-gray-dark" data-i18n="calendar.thursday">四</div>
+                    <div class="text-center py-2 font-medium text-gray-dark" data-i18n="calendar.friday">五</div>
+                    <div class="text-center py-2 font-medium text-gray-dark" data-i18n="calendar.saturday">六</div>
+                </div>
+                
+                <!-- 日历网格 -->
+                <div id="calendar-grid" class="grid grid-cols-7 gap-1">
+                    <!-- 日历天数将通过JavaScript动态生成 -->
+                </div>
+            </div>
+            
+            <!-- 今日课程概览 -->
+            <div class="bg-white rounded-lg shadow-card p-4">
+                <h3 class="text-xl font-semibold text-primary mb-4" data-i18n="calendar.todayCourses">今日课程</h3>
+                <div id="today-courses" class="space-y-3">
+                    <!-- 今日课程将通过JavaScript动态生成 -->
+                    <div class="course-card p-3 border rounded-lg flex justify-between items-center">
+                        <div>
+                            <h4 class="font-medium text-primary">芭蕾基础班</h4>
+                            <p class="text-sm text-gray-600">18:00-19:30 | 张老师</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">可预订</span>
+                            <button class="btn-accent text-sm">预订</button>
+                        </div>
+                    </div>
+                    <div class="course-card p-3 border rounded-lg flex justify-between items-center">
+                        <div>
+                            <h4 class="font-medium text-primary">现代舞进阶班</h4>
+                            <p class="text-sm text-gray-600">20:00-21:30 | 李老师</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">已满</span>
+                            <button class="btn-secondary text-sm opacity-50 cursor-not-allowed">等待名单</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 课程列表页面 -->
+        <section id="courses-page" class="page-content page-transition hidden">
+            <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <h2 class="text-2xl font-bold text-primary" data-i18n="courses.title">课程列表</h2>
+                <div class="flex flex-wrap gap-2">
+                    <div class="relative">
+                        <input type="text" id="courses-search" placeholder="搜索课程..." class="pl-8 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary">
+                        <i class="fa fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <select id="course-filter" class="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary">
+                        <option value="all" data-i18n="courses.filter.all">所有课程</option>
+                        <option value="ballet" data-i18n="courses.filter.ballet">芭蕾舞</option>
+                        <option value="modern" data-i18n="courses.filter.modern">现代舞</option>
+                        <option value="jazz" data-i18n="courses.filter.jazz">爵士舞</option>
+                        <option value="contemporary" data-i18n="courses.filter.contemporary">当代舞</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 课程卡片网格 -->
+            <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 课程卡片将通过JavaScript动态生成 -->
+                <div class="course-card bg-white rounded-lg shadow-card overflow-hidden">
+                    <div class="h-40 bg-primary relative">
+                        <div class="absolute inset-0 flex items-center justify-center text-white text-center p-4">
+                            <h3 class="text-xl font-bold">芭蕾基础班</h3>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center mb-2">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">芭蕾舞</span>
+                            <span class="ml-2 text-sm text-gray-600">
+                                <i class="fa fa-user mr-1"></i> 张老师
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-3">
+                            <i class="fa fa-clock-o mr-1"></i> 
+                            <span data-i18n="courses.schedule">课程时间：</span>周一、周三 18:00-19:30
+                        </p>
+                        <p class="text-sm text-gray-600 mb-3">
+                            <i class="fa fa-users mr-1"></i> 
+                            <span data-i18n="courses.capacity">容量：</span>15人 (已预订8人)
+                        </p>
+                        <p class="text-sm text-gray-600 mb-4">
+                            <i class="fa fa-info-circle mr-1"></i> 
+                            <span data-i18n="courses.level">级别：</span>初级
+                        </p>
+                        <div class="flex justify-between">
+                            <button class="btn-primary text-sm" data-i18n="courses.bookNow">立即预订</button>
+                            <button class="text-secondary hover:text-primary transition-all-300" data-i18n="courses.details">详情</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="course-card bg-white rounded-lg shadow-card overflow-hidden">
+                    <div class="h-40 bg-primary relative">
+                        <div class="absolute inset-0 flex items-center justify-center text-white text-center p-4">
+                            <h3 class="text-xl font-bold">现代舞进阶班</h3>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center mb-2">
+                            <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">现代舞</span>
+                            <span class="ml-2 text-sm text-gray-600">
+                                <i class="fa fa-user mr-1"></i> 李老师
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-3">
+                            <i class="fa fa-clock-o mr-1"></i> 
+                            <span data-i18n="courses.schedule">课程时间：</span>周二、周四 20:00-21:30
+                        </p>
+                        <p class="text-sm text-gray-600 mb-3">
+                            <i class="fa fa-users mr-1"></i> 
+                            <span data-i18n="courses.capacity">容量：</span>12人 (已预订12人)
+                        </p>
+                        <p class="text-sm text-gray-600 mb-4">
+                            <i class="fa fa-info-circle mr-1"></i> 
+                            <span data-i18n="courses.level">级别：</span>中级
+                        </p>
+                        <div class="flex justify-between">
+                            <button class="btn-secondary text-sm opacity-50 cursor-not-allowed" data-i18n="courses.full">已满</button>
+                            <button class="text-secondary hover:text-primary transition-all-300" data-i18n="courses.details">详情</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="course-card bg-white rounded-lg shadow-card overflow-hidden">
+                    <div class="h-40 bg-primary relative">
+                        <div class="absolute inset-0 flex items-center justify-center text-white text-center p-4">
+                            <h3 class="text-xl font-bold">爵士舞周末班</h3>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center mb-2">
+                            <span class="px-2 py-1 bg-pink-100 text-pink-800 text-xs rounded-full">爵士舞</span>
+                            <span class="ml-2 text-sm text-gray-600">
+                                <i class="fa fa-user mr-1"></i> 王老师
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-3">
+                            <i class="fa fa-clock-o mr-1"></i> 
+                            <span data-i18n="courses.schedule">课程时间：</span>周六 14:00-16:00
+                        </p>
+                        <p class="text-sm text-gray-600 mb-3">
+                            <i class="fa fa-users mr-1"></i> 
+                            <span data-i18n="courses.capacity">容量：</span>20人 (已预订15人)
+                        </p>
+                        <p class="text-sm text-gray-600 mb-4">
+                            <i class="fa fa-info-circle mr-1"></i> 
+                            <span data-i18n="courses.level">级别：</span>所有级别
+                        </p>
+                        <div class="flex justify-between">
+                            <button class="btn-primary text-sm" data-i18n="courses.bookNow">立即预订</button>
+                            <button class="text-secondary hover:text-primary transition-all-300" data-i18n="courses.details">详情</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 我的预订页面 -->
+        <section id="bookings-page" class="page-content page-transition hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-primary" data-i18n="bookings.title">我的预订</h2>
+            </div>
+
+            <!-- 预订状态标签 -->
+            <div class="flex border-b mb-6 overflow-x-auto">
+                <button class="booking-tab py-2 px-4 border-b-2 border-secondary text-secondary" data-status="upcoming">
+                    <span data-i18n="bookings.upcoming">即将到来</span>
+                </button>
+                <button class="booking-tab py-2 px-4 border-b-2 border-transparent text-gray-500 hover:text-secondary" data-status="past">
+                    <span data-i18n="bookings.past">历史预订</span>
+                </button>
+                <button class="booking-tab py-2 px-4 border-b-2 border-transparent text-gray-500 hover:text-secondary" data-status="cancelled">
+                    <span data-i18n="bookings.cancelled">已取消</span>
+                </button>
+            </div>
+
+            <!-- 预订列表 -->
+            <div id="bookings-list" class="space-y-4">
+                <!-- 预订项目将通过JavaScript动态生成 -->
+                <div class="booking-item bg-white rounded-lg shadow-card p-4">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-primary">芭蕾基础班</h3>
+                            <p class="text-sm text-gray-600">
+                                <i class="fa fa-calendar mr-1"></i> 2025年7月22日 (周一) 18:00-19:30
+                            </p>
+                            <p class="text-sm text-gray-600">
+                                <i class="fa fa-user mr-1"></i> 张老师
+                            </p>
+                        </div>
+                        <div class="mt-3 md:mt-0 flex flex-col sm:flex-row gap-2">
+                            <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full self-start">
+                                <i class="fa fa-check-circle mr-1"></i> 
+                                <span data-i18n="bookings.confirmed">已确认</span>
+                            </span>
+                            <button class="btn-danger text-sm" data-i18n="bookings.cancel">取消预订</button>
+                            <button class="btn-secondary text-sm" data-i18n="bookings.absent">请假</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="booking-item bg-white rounded-lg shadow-card p-4">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-primary">爵士舞周末班</h3>
+                            <p class="text-sm text-gray-600">
+                                <i class="fa fa-calendar mr-1"></i> 2025年7月26日 (周六) 14:00-16:00
+                            </p>
+                            <p class="text-sm text-gray-600">
+                                <i class="fa fa-user mr-1"></i> 王老师
+                            </p>
+                        </div>
+                        <div class="mt-3 md:mt-0 flex flex-col sm:flex-row gap-2">
+                            <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full self-start">
+                                <i class="fa fa-check-circle mr-1"></i> 
+                                <span data-i18n="bookings.confirmed">已确认</span>
+                            </span>
+                            <button class="btn-danger text-sm" data-i18n="bookings.cancel">取消预订</button>
+                            <button class="btn-secondary text-sm" data-i18n="bookings.absent">请假</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 设置页面 -->
+        <section id="settings-page" class="page-content page-transition hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-primary" data-i18n="settings.title">设置</h2>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-card p-6">
+                <h3 class="text-lg font-semibold text-primary mb-4" data-i18n="settings.profile">个人资料</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="settings.name">姓名</label>
+                        <input type="text" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary" value="张三">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="settings.email">电子邮箱</label>
+                        <input type="email" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary" value="zhangsan@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="settings.phone">手机号码</label>
+                        <input type="tel" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary" value="13800138000">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="settings.language">首选语言</label>
+                        <select class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary">
+                            <option value="zh-CN" data-i18n="settings.language.zhCN">简体中文</option>
+                            <option value="zh-TW" data-i18n="settings.language.zhTW">繁体中文</option>
+                            <option value="en-US" data-i18n="settings.language.enUS">English</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <button class="btn-primary" data-i18n="settings.saveProfile">保存资料</button>
+                </div>
+
+                <hr class="my-8 border-gray-200">
+
+                <h3 class="text-lg font-semibold text-primary mb-4" data-i18n="settings.notifications">通知设置</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-medium" data-i18n="settings.notifications.courseReminder">课程提醒</p>
+                            <p class="text-sm text-gray-600" data-i18n="settings.notifications.courseReminderDesc">在课程开始前24小时收到提醒通知</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-medium" data-i18n="settings.notifications.newCourse">新课程通知</p>
+                            <p class="text-sm text-gray-600" data-i18n="settings.notifications.newCourseDesc">当有新课程添加时收到通知</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-medium" data-i18n="settings.notifications.promotion">促销活动</p>
+                            <p class="text-sm text-gray-600" data-i18n="settings.notifications.promotionDesc">接收关于课程优惠和活动的通知</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <button class="btn-primary" data-i18n="settings.saveNotifications">保存通知设置</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 底部导航栏（移动端） -->
+    <footer class="md:hidden bg-white shadow-inner py-2">
+        <div class="container mx-auto">
+            <ul class="flex justify-around">
+                <li>
+                    <a href="#" class="footer-nav-link flex flex-col items-center py-1 text-secondary" data-page="calendar">
+                        <i class="fa fa-calendar text-xl"></i>
+                        <span class="text-xs mt-1" data-i18n="nav.calendar">日历</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="footer-nav-link flex flex-col items-center py-1 text-gray-500" data-page="courses">
+                        <i class="fa fa-list text-xl"></i>
+                        <span class="text-xs mt-1" data-i18n="nav.courses">课程</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="footer-nav-link flex flex-col items-center py-1 text-gray-500" data-page="bookings">
+                        <i class="fa fa-book text-xl"></i>
+                        <span class="text-xs mt-1" data-i18n="nav.myBookings">预订</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="footer-nav-link flex flex-col items-center py-1 text-gray-500" data-page="settings">
+                        <i class="fa fa-cog text-xl"></i>
+                        <span class="text-xs mt-1" data-i18n="nav.settings">设置</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </footer>
+
+    <!-- 预订模态框 -->
+    <div id="booking-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 transform transition-all">
+            <div class="p-4 border-b flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-primary" data-i18n="modal.booking.title">预订课程</h3>
+                <button id="close-booking-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                <form id="booking-form">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="modal.booking.course">选择课程</label>
+                        <select class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary">
+                            <option value="1">芭蕾基础班 (周一、周三 18:00-19:30)</option>
+                            <option value="2">现代舞进阶班 (周二、周四 20:00-21:30)</option>
+                            <option value="3">爵士舞周末班 (周六 14:00-16:00)</option>
+                            <option value="4">当代舞探索班 (周五 19:00-20:30)</option>
+                            <option value="5">拉丁舞初级班 (周六 10:00-11:30)</option>
+                            <option value="6">街舞基础班 (周日 15:00-16:30)</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="modal.booking.type">预订类型</label>
+                        <div class="flex space-x-4">
+                            <label class="flex items-center">
+                                <input type="radio" name="booking-type" value="regular" checked class="mr-2">
+                                <span data-i18n="modal.booking.regular">固定日程</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="booking-type" value="ad-hoc" class="mr-2">
+                                <span data-i18n="modal.booking.adHoc">单次预订</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="ad-hoc-date" class="mb-4 hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="modal.booking.date">选择日期</label>
+                        <input type="date" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="modal.booking.notes">备注 (可选)</label>
+                        <textarea class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary" rows="3" placeholder="如有特殊需求请在此说明"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancel-booking" class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100" data-i18n="modal.cancel">取消</button>
+                        <button type="submit" class="btn-primary" data-i18n="modal.booking.confirm">确认预订</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认消息模态框 -->
+    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-sm mx-4">
+            <div class="p-4 border-b">
+                <h3 class="text-lg font-semibold text-primary" id="confirm-title">确认操作</h3>
+            </div>
+            <div class="p-4">
+                <p id="confirm-message">您确定要执行此操作吗？</p>
+            </div>
+            <div class="p-4 border-t flex justify-end space-x-3">
+                <button id="confirm-cancel" class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100">取消</button>
+                <button id="confirm-ok" class="btn-primary">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成功消息提示 -->
+    <div id="success-toast" class="fixed bottom-4 right-4 bg-success text-white px-4 py-3 rounded-lg shadow-lg flex items-center transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <i class="fa fa-check-circle mr-2"></i>
+        <span id="success-message">操作成功</span>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // 国际化翻译数据
+        const translations = {
+            'zh-CN': {
+                'app.title': 'RT Atelier',
+                'nav.language': '语言',
+                'nav.profile': '个人中心',
+                'nav.calendar': '日历视图',
+                'nav.courses': '课程列表',
+                'nav.myBookings': '我的预订',
+                'nav.settings': '设置',
+                'calendar.title': '课程日历',
+                'calendar.filter': '筛选',
+                'calendar.addBooking': '新增预订',
+                'calendar.sunday': '日',
+                'calendar.monday': '一',
+                'calendar.tuesday': '二',
+                'calendar.wednesday': '三',
+                'calendar.thursday': '四',
+                'calendar.friday': '五',
+                'calendar.saturday': '六',
+                'calendar.todayCourses': '今日课程',
+                'courses.title': '课程列表',
+                'courses.filter.all': '所有课程',
+                'courses.filter.ballet': '芭蕾舞',
+                'courses.filter.modern': '现代舞',
+                'courses.filter.jazz': '爵士舞',
+                'courses.filter.contemporary': '当代舞',
+                'courses.schedule': '课程时间：',
+                'courses.capacity': '容量：',
+                'courses.level': '级别：',
+                'courses.bookNow': '立即预订',
+                'courses.details': '详情',
+                'courses.full': '已满',
+                'bookings.title': '我的预订',
+                'bookings.upcoming': '即将到来',
+                'bookings.past': '历史预订',
+                'bookings.cancelled': '已取消',
+                'bookings.confirmed': '已确认',
+                'bookings.cancel': '取消预订',
+                'bookings.absent': '请假',
+                'settings.title': '设置',
+                'settings.profile': '个人资料',
+                'settings.name': '姓名',
+                'settings.email': '电子邮箱',
+                'settings.phone': '手机号码',
+                'settings.language': '首选语言',
+                'settings.language.zhCN': '简体中文',
+                'settings.language.zhTW': '繁体中文',
+                'settings.language.enUS': 'English',
+                'settings.saveProfile': '保存资料',
+                'settings.notifications': '通知设置',
+                'settings.notifications.courseReminder': '课程提醒',
+                'settings.notifications.courseReminderDesc': '在课程开始前24小时收到提醒通知',
+                'settings.notifications.newCourse': '新课程通知',
+                'settings.notifications.newCourseDesc': '当有新课程添加时收到通知',
+                'settings.notifications.promotion': '促销活动',
+                'settings.notifications.promotionDesc': '接收关于课程优惠和活动的通知',
+                'settings.saveNotifications': '保存通知设置',
+                'modal.booking.title': '预订课程',
+                'modal.booking.course': '选择课程',
+                'modal.booking.type': '预订类型',
+                'modal.booking.regular': '固定日程',
+                'modal.booking.adHoc': '单次预订',
+                'modal.booking.date': '选择日期',
+                'modal.booking.notes': '备注 (可选)',
+                'modal.cancel': '取消',
+                'modal.booking.confirm': '确认预订'
+            },
+            'zh-TW': {
+                'app.title': 'RT Atelier',
+                'nav.language': '語言',
+                'nav.profile': '個人中心',
+                'nav.calendar': '日曆視圖',
+                'nav.courses': '課程列表',
+                'nav.myBookings': '我的預訂',
+                'nav.settings': '設置',
+                'calendar.title': '課程日曆',
+                'calendar.filter': '篩選',
+                'calendar.addBooking': '新增預訂',
+                'calendar.sunday': '日',
+                'calendar.monday': '一',
+                'calendar.tuesday': '二',
+                'calendar.wednesday': '三',
+                'calendar.thursday': '四',
+                'calendar.friday': '五',
+                'calendar.saturday': '六',
+                'calendar.todayCourses': '今日課程',
+                'courses.title': '課程列表',
+                'courses.filter.all': '所有課程',
+                'courses.filter.ballet': '芭蕾舞',
+                'courses.filter.modern': '現代舞',
+                'courses.filter.jazz': '爵士舞',
+                'courses.filter.contemporary': '當代舞',
+                'courses.schedule': '課程時間：',
+                'courses.capacity': '容量：',
+                'courses.level': '級別：',
+                'courses.bookNow': '立即預訂',
+                'courses.details': '詳情',
+                'courses.full': '已滿',
+                'bookings.title': '我的預訂',
+                'bookings.upcoming': '即將到來',
+                'bookings.past': '歷史預訂',
+                'bookings.cancelled': '已取消',
+                'bookings.confirmed': '已確認',
+                'bookings.cancel': '取消預訂',
+                'bookings.absent': '請假',
+                'settings.title': '設置',
+                'settings.profile': '個人資料',
+                'settings.name': '姓名',
+                'settings.email': '電子郵箱',
+                'settings.phone': '手機號碼',
+                'settings.language': '首選語言',
+                'settings.language.zhCN': '簡體中文',
+                'settings.language.zhTW': '繁體中文',
+                'settings.language.enUS': 'English',
+                'settings.saveProfile': '保存資料',
+                'settings.notifications': '通知設置',
+                'settings.notifications.courseReminder': '課程提醒',
+                'settings.notifications.courseReminderDesc': '在課程開始前24小時收到提醒通知',
+                'settings.notifications.newCourse': '新課程通知',
+                'settings.notifications.newCourseDesc': '當有新課程添加時收到通知',
+                'settings.notifications.promotion': '促銷活動',
+                'settings.notifications.promotionDesc': '接收關於課程優惠和活動的通知',
+                'settings.saveNotifications': '保存通知設置',
+                'modal.booking.title': '預訂課程',
+                'modal.booking.course': '選擇課程',
+                'modal.booking.type': '預訂類型',
+                'modal.booking.regular': '固定日程',
+                'modal.booking.adHoc': '單次預訂',
+                'modal.booking.date': '選擇日期',
+                'modal.booking.notes': '備註 (可選)',
+                'modal.cancel': '取消',
+                'modal.booking.confirm': '確認預訂'
+            },
+            'en-US': {
+                'app.title': 'RT Atelier',
+                'nav.language': 'Language',
+                'nav.profile': 'Profile',
+                'nav.calendar': 'Calendar',
+                'nav.courses': 'Courses',
+                'nav.myBookings': 'My Bookings',
+                'nav.settings': 'Settings',
+                'calendar.title': 'Course Calendar',
+                'calendar.filter': 'Filter',
+                'calendar.addBooking': 'Add Booking',
+                'calendar.sunday': 'Sun',
+                'calendar.monday': 'Mon',
+                'calendar.tuesday': 'Tue',
+                'calendar.wednesday': 'Wed',
+                'calendar.thursday': 'Thu',
+                'calendar.friday': 'Fri',
+                'calendar.saturday': 'Sat',
+                'calendar.todayCourses': 'Today\'s Courses',
+                'courses.title': 'Course List',
+                'courses.filter.all': 'All Courses',
+                'courses.filter.ballet': 'Ballet',
+                'courses.filter.modern': 'Modern Dance',
+                'courses.filter.jazz': 'Jazz',
+                'courses.filter.contemporary': 'Contemporary',
+                'courses.schedule': 'Schedule:',
+                'courses.capacity': 'Capacity:',
+                'courses.level': 'Level:',
+                'courses.bookNow': 'Book Now',
+                'courses.details': 'Details',
+                'courses.full': 'Full',
+                'bookings.title': 'My Bookings',
+                'bookings.upcoming': 'Upcoming',
+                'bookings.past': 'Past Bookings',
+                'bookings.cancelled': 'Cancelled',
+                'bookings.confirmed': 'Confirmed',
+                'bookings.cancel': 'Cancel Booking',
+                'bookings.absent': 'Report Absence',
+                'settings.title': 'Settings',
+                'settings.profile': 'Profile',
+                'settings.name': 'Name',
+                'settings.email': 'Email',
+                'settings.phone': 'Phone',
+                'settings.language': 'Preferred Language',
+                'settings.language.zhCN': '简体中文',
+                'settings.language.zhTW': '繁體中文',
+                'settings.language.enUS': 'English',
+                'settings.saveProfile': 'Save Profile',
+                'settings.notifications': 'Notification Settings',
+                'settings.notifications.courseReminder': 'Course Reminders',
+                'settings.notifications.courseReminderDesc': 'Receive reminders 24 hours before your course',
+                'settings.notifications.newCourse': 'New Course Notifications',
+                'settings.notifications.newCourseDesc': 'Get notified when new courses are added',
+                'settings.notifications.promotion': 'Promotions',
+                'settings.notifications.promotionDesc': 'Receive notifications about course discounts and events',
+                'settings.saveNotifications': 'Save Notification Settings',
+                'modal.booking.title': 'Book Course',
+                'modal.booking.course': 'Select Course',
+                'modal.booking.type': 'Booking Type',
+                'modal.booking.regular': 'Regular Booking',
+                'modal.booking.adHoc': 'Ad-hoc Booking',
+                'modal.booking.date': 'Select Date',
+                'modal.booking.notes': 'Notes (Optional)',
+                'modal.cancel': 'Cancel',
+                'modal.booking.confirm': 'Confirm Booking'
+            }
+        };
+
+        // 当前语言设置
+        let currentLanguage = 'zh-CN';
+
+        // 课程数据
+        const courses = [
+            {
+                id: 1,
+                name: {
+                    'zh-CN': '芭蕾基础班',
+                    'zh-TW': '芭蕾基礎班',
+                    'en-US': 'Ballet Basics'
+                },
+                type: 'ballet',
+                description: {
+                    'zh-CN': '适合初学者的芭蕾舞基础课程',
+                    'zh-TW': '適合初學者的芭蕾舞基礎課程',
+                    'en-US': 'Ballet basics course for beginners'
+                },
+                schedule: [
+                    { day: 1, time: '18:00-19:30' }, // 周一
+                    { day: 3, time: '18:00-19:30' }  // 周三
+                ],
+                capacity: 15,
+                currentBookings: 8,
+                instructor: {
+                    'zh-CN': '张老师',
+                    'zh-TW': '張老師',
+                    'en-US': 'Teacher Zhang'
+                },
+                level: {
+                    'zh-CN': '初级',
+                    'zh-TW': '初級',
+                    'en-US': 'Beginner'
+                }
+            },
+            {
+                id: 2,
+                name: {
+                    'zh-CN': '现代舞进阶班',
+                    'zh-TW': '現代舞進階班',
+                    'en-US': 'Modern Dance Advanced'
+                },
+                type: 'modern',
+                description: {
+                    'zh-CN': '适合有一定基础的学员',
+                    'zh-TW': '適合有一定基礎的學員',
+                    'en-US': 'For students with some experience'
+                },
+                schedule: [
+                    { day: 2, time: '20:00-21:30' }, // 周二
+                    { day: 4, time: '20:00-21:30' }  // 周四
+                ],
+                capacity: 12,
+                currentBookings: 12,
+                instructor: {
+                    'zh-CN': '李老师',
+                    'zh-TW': '李老師',
+                    'en-US': 'Teacher Li'
+                },
+                level: {
+                    'zh-CN': '中级',
+                    'zh-TW': '中級',
+                    'en-US': 'Intermediate'
+                }
+            },
+            {
+                id: 3,
+                name: {
+                    'zh-CN': '爵士舞周末班',
+                    'zh-TW': '爵士舞週末班',
+                    'en-US': 'Jazz Weekend Class'
+                },
+                type: 'jazz',
+                description: {
+                    'zh-CN': '轻松愉快的爵士舞课程',
+                    'zh-TW': '輕鬆愉快的爵士舞課程',
+                    'en-US': 'Fun and energetic jazz dance class'
+                },
+                schedule: [
+                    { day: 6, time: '14:00-16:00' }  // 周六
+                ],
+                capacity: 20,
+                currentBookings: 15,
+                instructor: {
+                    'zh-CN': '王老师',
+                    'zh-TW': '王老師',
+                    'en-US': 'Teacher Wang'
+                },
+                level: {
+                    'zh-CN': '所有级别',
+                    'zh-TW': '所有級別',
+                    'en-US': 'All Levels'
+                }
+            },
+            {
+                id: 4,
+                name: {
+                    'zh-CN': '当代舞探索班',
+                    'zh-TW': '當代舞探索班',
+                    'en-US': 'Contemporary Exploration'
+                },
+                type: 'contemporary',
+                description: {
+                    'zh-CN': '探索当代舞蹈的多样性',
+                    'zh-TW': '探索當代舞蹈的多樣性',
+                    'en-US': 'Explore the diversity of contemporary dance'
+                },
+                schedule: [
+                    { day: 5, time: '19:00-20:30' }  // 周五
+                ],
+                capacity: 10,
+                currentBookings: 6,
+                instructor: {
+                    'zh-CN': '陈老师',
+                    'zh-TW': '陳老師',
+                    'en-US': 'Teacher Chen'
+                },
+                level: {
+                    'zh-CN': '中级',
+                    'zh-TW': '中級',
+                    'en-US': 'Intermediate'
+                }
+            },
+            {
+                id: 5,
+                name: {
+                    'zh-CN': '拉丁舞初级班',
+                    'zh-TW': '拉丁舞初級班',
+                    'en-US': 'Latin Dance Beginner'
+                },
+                type: 'latin',
+                description: {
+                    'zh-CN': '学习拉丁舞的基本步法和技巧',
+                    'zh-TW': '學習拉丁舞的基本步法和技巧',
+                    'en-US': 'Learn basic Latin dance steps and techniques'
+                },
+                schedule: [
+                    { day: 6, time: '10:00-11:30' }  // 周六
+                ],
+                capacity: 15,
+                currentBookings: 10,
+                instructor: {
+                    'zh-CN': '刘老师',
+                    'zh-TW': '劉老師',
+                    'en-US': 'Teacher Liu'
+                },
+                level: {
+                    'zh-CN': '初级',
+                    'zh-TW': '初級',
+                    'en-US': 'Beginner'
+                }
+            },
+            {
+                id: 6,
+                name: {
+                    'zh-CN': '街舞基础班',
+                    'zh-TW': '街舞基礎班',
+                    'en-US': 'Hip Hop Basics'
+                },
+                type: 'hiphop',
+                description: {
+                    'zh-CN': '学习街舞的基本动作和组合',
+                    'zh-TW': '學習街舞的基本動作和組合',
+                    'en-US': 'Learn basic hip hop moves and combinations'
+                },
+                schedule: [
+                    { day: 0, time: '15:00-16:30' }  // 周日
+                ],
+                capacity: 18,
+                currentBookings: 12,
+                instructor: {
+                    'zh-CN': '赵老师',
+                    'zh-TW': '趙老師',
+                    'en-US': 'Teacher Zhao'
+                },
+                level: {
+                    'zh-CN': '初级',
+                    'zh-TW': '初級',
+                    'en-US': 'Beginner'
+                }
+            }
+        ];
+
+        // 用户预订数据
+        const bookings = [
+            {
+                id: 1,
+                userId: 'user123',
+                courseId: 1,
+                date: '2025-07-22',
+                type: 'regular',
+                status: 'confirmed'
+            },
+            {
+                id: 2,
+                userId: 'user123',
+                courseId: 3,
+                date: '2025-07-26',
+                type: 'ad-hoc',
+                status: 'confirmed'
+            }
+        ];
+
+        // 当前日期
+        const today = new Date();
+        let currentDate = new Date();
+
+        // DOM 加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化页面
+            initCalendar();
+            initEventListeners();
+            updateLanguage(currentLanguage);
+            
+            // 显示成功消息示例
+            showSuccessMessage('欢迎使用RT Atelier舞蹈课程预订系统！');
+        });
+
+        // 初始化日历
+        function initCalendar() {
+            const calendarGrid = document.getElementById('calendar-grid');
+            const currentMonthElement = document.getElementById('current-month');
+            
+            // 设置当前月份显示
+            const monthNames = [
+                { 'zh-CN': '一月', 'zh-TW': '一月', 'en-US': 'January' },
+                { 'zh-CN': '二月', 'zh-TW': '二月', 'en-US': 'February' },
+                { 'zh-CN': '三月', 'zh-TW': '三月', 'en-US': 'March' },
+                { 'zh-CN': '四月', 'zh-TW': '四月', 'en-US': 'April' },
+                { 'zh-CN': '五月', 'zh-TW': '五月', 'en-US': 'May' },
+                { 'zh-CN': '六月', 'zh-TW': '六月', 'en-US': 'June' },
+                { 'zh-CN': '七月', 'zh-TW': '七月', 'en-US': 'July' },
+                { 'zh-CN': '八月', 'zh-TW': '八月', 'en-US': 'August' },
+                { 'zh-CN': '九月', 'zh-TW': '九月', 'en-US': 'September' },
+                { 'zh-CN': '十月', 'zh-TW': '十月', 'en-US': 'October' },
+                { 'zh-CN': '十一月', 'zh-TW': '十一月', 'en-US': 'November' },
+                { 'zh-CN': '十二月', 'zh-TW': '十二月', 'en-US': 'December' }
+            ];
+            
+            currentMonthElement.textContent = `${currentDate.getFullYear()}年${monthNames[currentDate.getMonth()][currentLanguage]}`;
+            
+            // 清空日历网格
+            calendarGrid.innerHTML = '';
+            
+            // 获取当月第一天是星期几
+            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
+            
+            // 获取当月的天数
+            const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+            
+            // 添加空白单元格（上个月的日期）
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day p-1 border bg-gray-50';
+                calendarGrid.appendChild(emptyDay);
+            }
+            
+            // 添加当月的日期单元格
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day p-1 border relative';
+                
+                // 检查是否是今天
+                const isToday = today.getDate() === day && 
+                                today.getMonth() === currentDate.getMonth() && 
+                                today.getFullYear() === currentDate.getFullYear();
+                
+                if (isToday) {
+                    dayElement.classList.add('today');
+                }
+                
+                // 添加日期数字
+                const dateNumber = document.createElement('div');
+                dateNumber.className = 'text-right mb-1';
+                dateNumber.textContent = day;
+                dayElement.appendChild(dateNumber);
+                
+                // 添加当天的课程
+                const currentDateObj = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                const dayOfWeek = currentDateObj.getDay();
+                
+                // 查找当天有哪些课程
+                const dayCourses = courses.filter(course => 
+                    course.schedule.some(s => s.day === dayOfWeek)
+                );
+                
+                if (dayCourses.length > 0) {
+                    dayElement.classList.add('has-event');
+                    
+                    // 添加课程列表
+                    const coursesList = document.createElement('div');
+                    coursesList.className = 'space-y-1';
+                    
+                    dayCourses.forEach(course => {
+                        const courseItem = document.createElement('div');
+                        courseItem.className = 'text-xs p-1 rounded bg-primary bg-opacity-10 text-primary truncate';
+                        courseItem.textContent = `${course.name[currentLanguage]} ${course.schedule.find(s => s.day === dayOfWeek).time}`;
+                        coursesList.appendChild(courseItem);
+                    });
+                    
+                    dayElement.appendChild(coursesList);
+                }
+                
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        // 初始化事件监听器
+        function initEventListeners() {
+            // 导航链接点击事件
+            document.querySelectorAll('.nav-link, .footer-nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetPage = this.getAttribute('data-page');
+                    navigateToPage(targetPage);
+                });
+            });
+            
+            // 个人中心按钮点击事件
+            document.getElementById('user-profile').addEventListener('click', function() {
+                // 导航到设置页面
+                navigateToPage('settings');
+            });
+            
+            // 语言切换下拉菜单
+            const langToggle = document.getElementById('lang-toggle');
+            const langDropdown = document.getElementById('language-dropdown');
+            
+            langToggle.addEventListener('click', function() {
+                langDropdown.classList.toggle('hidden');
+            });
+            
+            // 点击其他地方关闭下拉菜单
+            document.addEventListener('click', function(e) {
+                if (!langToggle.contains(e.target) && !langDropdown.contains(e.target)) {
+                    langDropdown.classList.add('hidden');
+                }
+            });
+            
+            // 语言选项点击事件
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    changeLanguage(lang);
+                    langDropdown.classList.add('hidden');
+                });
+            });
+            
+            // 日历导航按钮
+            document.getElementById('prev-month').addEventListener('click', function() {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                initCalendar();
+            });
+            
+            document.getElementById('next-month').addEventListener('click', function() {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                initCalendar();
+            });
+            
+            // 预订模态框
+            const bookingModal = document.getElementById('booking-modal');
+            const addBookingBtn = document.getElementById('add-booking-btn');
+            const closeBookingModal = document.getElementById('close-booking-modal');
+            const cancelBooking = document.getElementById('cancel-booking');
+            
+            addBookingBtn.addEventListener('click', function() {
+                bookingModal.classList.remove('hidden');
+            });
+            
+            closeBookingModal.addEventListener('click', function() {
+                bookingModal.classList.add('hidden');
+            });
+            
+            cancelBooking.addEventListener('click', function() {
+                bookingModal.classList.add('hidden');
+            });
+            
+            // 点击模态框外部关闭
+            bookingModal.addEventListener('click', function(e) {
+                if (e.target === bookingModal) {
+                    bookingModal.classList.add('hidden');
+                }
+            });
+            
+            // 预订类型切换
+            const bookingTypeRadios = document.querySelectorAll('input[name="booking-type"]');
+            const adHocDateField = document.getElementById('ad-hoc-date');
+            
+            bookingTypeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'ad-hoc') {
+                        adHocDateField.classList.remove('hidden');
+                    } else {
+                        adHocDateField.classList.add('hidden');
+                    }
+                });
+            });
+            
+            // 预订表单提交
+            const bookingForm = document.getElementById('booking-form');
+            
+            bookingForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 模拟预订提交
+                bookingModal.classList.add('hidden');
+                showSuccessMessage(translations[currentLanguage]['modal.booking.confirm'] + '成功！');
+            });
+            
+            // 预订取消按钮
+            document.querySelectorAll('.booking-item .btn-danger').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showConfirmModal(
+                        '取消预订',
+                        '您确定要取消这个预订吗？',
+                        function() {
+                            // 模拟取消操作
+                            showSuccessMessage('预订已成功取消');
+                        }
+                    );
+                });
+            });
+            
+            // 请假按钮
+            document.querySelectorAll('.booking-item .btn-secondary').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showConfirmModal(
+                        '请假',
+                        '您确定要为此课程请假吗？',
+                        function() {
+                            // 模拟请假操作
+                            showSuccessMessage('已成功提交请假');
+                        }
+                    );
+                });
+            });
+            
+            // 课程预订按钮
+            document.querySelectorAll('.course-card .btn-primary').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    bookingModal.classList.remove('hidden');
+                });
+            });
+            
+            // 设置保存按钮
+            document.querySelectorAll('#settings-page .btn-primary').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showSuccessMessage('设置已成功保存');
+                });
+            });
+        }
+
+        // 页面导航
+        function navigateToPage(pageId) {
+            // 隐藏所有页面
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.add('hidden');
+            });
+            
+            // 显示目标页面
+            const targetPage = document.getElementById(`${pageId}-page`);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+                
+                // 添加页面进入动画
+                targetPage.classList.add('page-enter');
+                setTimeout(() => {
+                    targetPage.classList.add('page-enter-active');
+                }, 10);
+                setTimeout(() => {
+                    targetPage.classList.remove('page-enter', 'page-enter-active');
+                }, 300);
+            }
+            
+            // 更新导航链接状态
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.getAttribute('data-page') === pageId) {
+                    link.classList.add('text-secondary', 'border-b-2', 'border-secondary');
+                    link.classList.remove('text-white', 'hover:text-secondary');
+                } else {
+                    link.classList.remove('text-secondary', 'border-b-2', 'border-secondary');
+                    link.classList.add('text-white', 'hover:text-secondary');
+                }
+            });
+            
+            // 更新底部导航状态
+            document.querySelectorAll('.footer-nav-link').forEach(link => {
+                if (link.getAttribute('data-page') === pageId) {
+                    link.classList.add('text-secondary');
+                    link.classList.remove('text-gray-500');
+                } else {
+                    link.classList.remove('text-secondary');
+                    link.classList.add('text-gray-500');
+                }
+            });
+        }
+
+        // 切换语言
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            updateLanguage(lang);
+            
+            // 重新初始化日历以更新月份名称
+            initCalendar();
+        }
+
+        // 更新页面语言
+        function updateLanguage(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // 更新页面语言属性
+            document.documentElement.lang = lang;
+        }
+
+        // 显示确认模态框
+        function showConfirmModal(title, message, callback) {
+            const confirmModal = document.getElementById('confirm-modal');
+            const confirmTitle = document.getElementById('confirm-title');
+            const confirmMessage = document.getElementById('confirm-message');
+            const confirmOk = document.getElementById('confirm-ok');
+            const confirmCancel = document.getElementById('confirm-cancel');
+            
+            confirmTitle.textContent = title;
+            confirmMessage.textContent = message;
+            
+            confirmModal.classList.remove('hidden');
+            
+            // 确认按钮点击事件
+            const okHandler = function() {
+                confirmModal.classList.add('hidden');
+                callback();
+                confirmOk.removeEventListener('click', okHandler);
+            };
+            
+            confirmOk.addEventListener('click', okHandler);
+            
+            // 取消按钮点击事件
+            const cancelHandler = function() {
+                confirmModal.classList.add('hidden');
+                confirmCancel.removeEventListener('click', cancelHandler);
+            };
+            
+            confirmCancel.addEventListener('click', cancelHandler);
+            
+            // 点击模态框外部关闭
+            const outsideHandler = function(e) {
+                if (e.target === confirmModal) {
+                    confirmModal.classList.add('hidden');
+                    confirmModal.removeEventListener('click', outsideHandler);
+                }
+            };
+            
+            confirmModal.addEventListener('click', outsideHandler);
+        }
+
+        // 显示成功消息
+        function showSuccessMessage(message) {
+            const successToast = document.getElementById('success-toast');
+            const successMessage = document.getElementById('success-message');
+            
+            successMessage.textContent = message;
+            
+            // 显示消息
+            successToast.classList.remove('translate-y-20', 'opacity-0');
+            
+            // 3秒后隐藏
+            setTimeout(() => {
+                successToast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
