@@ -155,6 +155,10 @@
                     <button class="language-option block w-full text-left px-4 py-2 hover:bg-opacity-80 text-white rounded" data-lang="zh-TW">繁體中文</button>
                     <button class="language-option block w-full text-left px-4 py-2 hover:bg-opacity-80 text-white rounded" data-lang="en-US">English</button>
                 </div>
+                <button id="teacher-summary" class="flex items-center space-x-1 text-white hover:text-secondary transition-all-300">
+                    <i class="fa fa-bar-chart text-xl"></i>
+                    <span data-i18n="nav.teacherSummary">老师汇总</span>
+                </button>
                 <button id="user-profile" class="flex items-center space-x-1 text-white hover:text-secondary transition-all-300">
                     <i class="fa fa-user-circle-o text-xl"></i>
                     <span data-i18n="nav.profile">个人中心</span>
@@ -175,6 +179,9 @@
                     </li>
                     <li>
                         <a href="#" class="nav-link block py-3 px-2 text-white hover:text-secondary transition-all-300" data-page="settings" data-i18n="nav.settings">设置</a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link block py-3 px-2 text-white hover:text-secondary transition-all-300" data-page="teacher-summary-page" data-i18n="nav.teacherSummary">老师汇总</a>
                     </li>
                 </ul>
             </div>
@@ -209,7 +216,7 @@
                     <button id="prev-month" class="text-primary hover:text-secondary transition-all-300">
                         <i class="fa fa-chevron-left"></i>
                     </button>
-                    <h3 id="current-month" class="text-xl font-semibold text-primary">2025年7月</h3>
+                    <h3 id="current-month" class="text-xl font-semibold text-primary">2026年3月</h3>
                     <button id="next-month" class="text-primary hover:text-secondary transition-all-300">
                         <i class="fa fa-chevron-right"></i>
                     </button>
@@ -285,49 +292,6 @@
             <!-- 预订列表 -->
             <div id="bookings-list" class="space-y-4">
                 <!-- 预订项目将通过JavaScript动态生成 -->
-                <div class="booking-item bg-white rounded-lg shadow-card p-4">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between">
-                        <div>
-                            <h3 class="text-lg font-semibold text-primary">芭蕾基础班</h3>
-                            <p class="text-sm text-gray-600">
-                                <i class="fa fa-calendar mr-1"></i> 2025年7月22日 (周一) 18:00-19:30
-                            </p>
-                            <p class="text-sm text-gray-600">
-                                <i class="fa fa-user mr-1"></i> 张老师
-                            </p>
-                        </div>
-                        <div class="mt-3 md:mt-0 flex flex-col sm:flex-row gap-2">
-                            <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full self-start">
-                                <i class="fa fa-check-circle mr-1"></i> 
-                                <span data-i18n="bookings.confirmed">已确认</span>
-                            </span>
-                            <button class="btn-danger text-sm" data-i18n="bookings.cancel">取消预订</button>
-                            <button class="btn-secondary text-sm" data-i18n="bookings.absent">请假</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="booking-item bg-white rounded-lg shadow-card p-4">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between">
-                        <div>
-                            <h3 class="text-lg font-semibold text-primary">爵士舞周末班</h3>
-                            <p class="text-sm text-gray-600">
-                                <i class="fa fa-calendar mr-1"></i> 2025年7月26日 (周六) 14:00-16:00
-                            </p>
-                            <p class="text-sm text-gray-600">
-                                <i class="fa fa-user mr-1"></i> 王老师
-                            </p>
-                        </div>
-                        <div class="mt-3 md:mt-0 flex flex-col sm:flex-row gap-2">
-                            <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full self-start">
-                                <i class="fa fa-check-circle mr-1"></i> 
-                                <span data-i18n="bookings.confirmed">已确认</span>
-                            </span>
-                            <button class="btn-danger text-sm" data-i18n="bookings.cancel">取消预订</button>
-                            <button class="btn-secondary text-sm" data-i18n="bookings.absent">请假</button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -354,7 +318,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="settings.language">首选语言</label>
-                        <select class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary">
+                        <select id="preferred-language" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary">
                             <option value="zh-CN" data-i18n="settings.language.zhCN">简体中文</option>
                             <option value="zh-TW" data-i18n="settings.language.zhTW">繁体中文</option>
                             <option value="en-US" data-i18n="settings.language.enUS">English</option>
@@ -362,7 +326,7 @@
                     </div>
                 </div>
                 <div class="mt-6">
-                    <button class="btn-primary" data-i18n="settings.saveProfile">保存资料</button>
+                    <button id="save-profile" class="btn-primary" data-i18n="settings.saveProfile">保存资料</button>
                 </div>
 
                 <hr class="my-8 border-gray-200">
@@ -374,9 +338,9 @@
                             <p class="font-medium" data-i18n="settings.notifications.courseReminder">课程提醒</p>
                             <p class="text-sm text-gray-600" data-i18n="settings.notifications.courseReminderDesc">在课程开始前24小时收到提醒通知</p>
                         </div>
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider round"></span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
                         </label>
                     </div>
                     <div class="flex items-center justify-between">
@@ -384,9 +348,9 @@
                             <p class="font-medium" data-i18n="settings.notifications.newCourse">新课程通知</p>
                             <p class="text-sm text-gray-600" data-i18n="settings.notifications.newCourseDesc">当有新课程添加时收到通知</p>
                         </div>
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider round"></span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
                         </label>
                     </div>
                     <div class="flex items-center justify-between">
@@ -394,14 +358,14 @@
                             <p class="font-medium" data-i18n="settings.notifications.promotion">促销活动</p>
                             <p class="text-sm text-gray-600" data-i18n="settings.notifications.promotionDesc">接收关于课程优惠和活动的通知</p>
                         </div>
-                        <label class="switch">
-                            <input type="checkbox">
-                            <span class="slider round"></span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
                         </label>
                     </div>
                 </div>
                 <div class="mt-6">
-                    <button class="btn-primary" data-i18n="settings.saveNotifications">保存通知设置</button>
+                    <button id="save-notifications" class="btn-primary" data-i18n="settings.saveNotifications">保存通知设置</button>
                 </div>
             </div>
         </section>
@@ -452,13 +416,8 @@
                 <form id="booking-form">
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="modal.booking.course">选择课程</label>
-                        <select class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary">
-                            <option value="1">芭蕾基础班 (周一、周三 18:00-19:30)</option>
-                            <option value="2">现代舞进阶班 (周二、周四 20:00-21:30)</option>
-                            <option value="3">爵士舞周末班 (周六 14:00-16:00)</option>
-                            <option value="4">当代舞探索班 (周五 19:00-20:30)</option>
-                            <option value="5">拉丁舞初级班 (周六 10:00-11:30)</option>
-                            <option value="6">街舞基础班 (周日 15:00-16:30)</option>
+                        <select id="course-select" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary">
+                            <!-- 课程选项将通过JavaScript动态生成 -->
                         </select>
                     </div>
                     <div class="mb-4">
@@ -499,35 +458,37 @@
             </div>
             <div class="p-4">
                 <p id="confirm-message">您确定要执行此操作吗？</p>
-            </div>
-            <div class="p-4 border-t flex justify-end space-x-3">
-                <button id="confirm-cancel" class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100">取消</button>
-                <button id="confirm-ok" class="btn-primary">确认</button>
+                <div class="flex justify-end space-x-3 mt-4">
+                    <button id="confirm-cancel" class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100" data-i18n="modal.cancel">取消</button>
+                    <button id="confirm-ok" class="btn-primary" data-i18n="modal.confirm">确认</button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- 成功消息提示 -->
-    <div id="success-toast" class="fixed bottom-4 right-4 bg-success text-white px-4 py-3 rounded-lg shadow-lg flex items-center transform translate-y-20 opacity-0 transition-all duration-300 z-50">
-        <i class="fa fa-check-circle mr-2"></i>
-        <span id="success-message">操作成功</span>
+    <div id="success-message" class="fixed top-4 right-4 bg-success text-white px-4 py-2 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+        <div class="flex items-center">
+            <i class="fa fa-check-circle mr-2"></i>
+            <span id="success-text">操作成功！</span>
+        </div>
     </div>
 
-    <!-- JavaScript -->
     <script>
-        // 国际化翻译数据
+        // 多语言翻译数据
         const translations = {
             'zh-CN': {
                 'app.title': 'RT Atelier',
-                'nav.language': '语言',
-                'nav.profile': '个人中心',
                 'nav.calendar': '日历视图',
                 'nav.courses': '课程列表',
                 'nav.myBookings': '我的预订',
                 'nav.settings': '设置',
+                'nav.language': '语言',
+                'nav.profile': '个人中心',
                 'calendar.title': '课程日历',
                 'calendar.filter': '筛选',
                 'calendar.addBooking': '新增预订',
+                'calendar.todayCourses': '今日课程',
                 'calendar.sunday': '日',
                 'calendar.monday': '一',
                 'calendar.tuesday': '二',
@@ -535,26 +496,36 @@
                 'calendar.thursday': '四',
                 'calendar.friday': '五',
                 'calendar.saturday': '六',
-                'calendar.todayCourses': '今日课程',
                 'courses.title': '课程列表',
                 'courses.filter.all': '所有课程',
-                'courses.filter.ballet': '芭蕾舞',
-                'courses.filter.modern': '现代舞',
-                'courses.filter.jazz': '爵士舞',
-                'courses.filter.contemporary': '当代舞',
-                'courses.schedule': '课程时间：',
-                'courses.capacity': '容量：',
-                'courses.level': '级别：',
+                'courses.filter.latin': '拉丁舞',
+                'courses.level.all': '所有级别',
+                'courses.level.beginner': '初级',
+                'courses.level.intermediate': '中级',
+                'courses.level.advanced': '高级',
+                'courses.day.all': '所有日期',
+                'courses.day.monday': '周一',
+                'courses.day.tuesday': '周二',
+                'courses.day.wednesday': '周三',
+                'courses.day.thursday': '周四',
+                'courses.day.friday': '周五',
+                'courses.day.saturday': '周六',
+                'courses.day.sunday': '周日',
+                'courses.time.all': '所有时间',
+                'courses.time.morning': '上午',
+                'courses.time.afternoon': '下午',
+                'courses.time.evening': '晚上',
                 'courses.bookNow': '立即预订',
-                'courses.details': '详情',
-                'courses.full': '已满',
+                'courses.details': '查看详情',
                 'bookings.title': '我的预订',
                 'bookings.upcoming': '即将到来',
                 'bookings.past': '历史预订',
                 'bookings.cancelled': '已取消',
                 'bookings.confirmed': '已确认',
+                'bookings.leave': '已请假',
                 'bookings.cancel': '取消预订',
                 'bookings.absent': '请假',
+                'bookings.noBookings': '暂无预订记录',
                 'settings.title': '设置',
                 'settings.profile': '个人资料',
                 'settings.name': '姓名',
@@ -580,20 +551,57 @@
                 'modal.booking.adHoc': '单次预订',
                 'modal.booking.date': '选择日期',
                 'modal.booking.notes': '备注 (可选)',
+                'modal.booking.confirm': '确认预订',
                 'modal.cancel': '取消',
-                'modal.booking.confirm': '确认预订'
+                'modal.confirm': '确认',
+                'success.booking': '课程预订',
+                'success.cancel': '取消预订',
+                'success.leave': '请假申请',
+                'success.update': '更新设置',
+                'error.courseFull': '该课程已满',
+                'error.alreadyBooked': '您已预订该课程',
+                'error.invalidDate': '请选择有效的日期',
+                'error.general': '操作失败，请重试',
+                'teacherSummary.title': '老师课程报名汇总',
+                'teacherSummary.stats': '课程报名统计',
+                'teacherSummary.details': '学员报名详情',
+                'teacherSummary.total': '总名额',
+                'teacherSummary.booked': '已报名',
+                'teacherSummary.remaining': '剩余名额',
+                'teacherSummary.students': '学员列表',
+                'teacherSummary.noBookings': '暂无报名记录',
+                'nav.teacherSummary': '老师汇总',
+                'teacherSummary.title': '老师课程报名汇总',
+                'teacherSummary.stats': '课程报名统计',
+                'teacherSummary.details': '学员报名详情',
+                'teacherSummary.total': '总名额',
+                'teacherSummary.booked': '已报名',
+                'teacherSummary.remaining': '剩余名额',
+                'teacherSummary.students': '学员列表',
+                'teacherSummary.noBookings': '暂无报名记录',
+                'nav.teacherSummary': '老师汇总',
+                'teacherSummary.title': '老师课程报名汇总',
+                'teacherSummary.stats': '课程报名统计',
+                'teacherSummary.details': '学员报名详情',
+                'teacherSummary.total': '总名额',
+                'teacherSummary.booked': '已报名',
+                'teacherSummary.remaining': '剩余名额',
+                'teacherSummary.students': '学员列表',
+                'teacherSummary.noBookings': '暂无报名记录',
+                'nav.teacherSummary': '老师汇总'
             },
             'zh-TW': {
                 'app.title': 'RT Atelier',
-                'nav.language': '語言',
-                'nav.profile': '個人中心',
                 'nav.calendar': '日曆視圖',
                 'nav.courses': '課程列表',
                 'nav.myBookings': '我的預訂',
                 'nav.settings': '設置',
+                'nav.language': '語言',
+                'nav.profile': '個人中心',
                 'calendar.title': '課程日曆',
                 'calendar.filter': '篩選',
                 'calendar.addBooking': '新增預訂',
+                'calendar.todayCourses': '今日課程',
                 'calendar.sunday': '日',
                 'calendar.monday': '一',
                 'calendar.tuesday': '二',
@@ -601,26 +609,36 @@
                 'calendar.thursday': '四',
                 'calendar.friday': '五',
                 'calendar.saturday': '六',
-                'calendar.todayCourses': '今日課程',
                 'courses.title': '課程列表',
                 'courses.filter.all': '所有課程',
-                'courses.filter.ballet': '芭蕾舞',
-                'courses.filter.modern': '現代舞',
-                'courses.filter.jazz': '爵士舞',
-                'courses.filter.contemporary': '當代舞',
-                'courses.schedule': '課程時間：',
-                'courses.capacity': '容量：',
-                'courses.level': '級別：',
+                'courses.filter.latin': '拉丁舞',
+                'courses.level.all': '所有級別',
+                'courses.level.beginner': '初級',
+                'courses.level.intermediate': '中級',
+                'courses.level.advanced': '高級',
+                'courses.day.all': '所有日期',
+                'courses.day.monday': '週一',
+                'courses.day.tuesday': '週二',
+                'courses.day.wednesday': '週三',
+                'courses.day.thursday': '週四',
+                'courses.day.friday': '週五',
+                'courses.day.saturday': '週六',
+                'courses.day.sunday': '週日',
+                'courses.time.all': '所有時間',
+                'courses.time.morning': '上午',
+                'courses.time.afternoon': '下午',
+                'courses.time.evening': '晚上',
                 'courses.bookNow': '立即預訂',
-                'courses.details': '詳情',
-                'courses.full': '已滿',
+                'courses.details': '查看詳情',
                 'bookings.title': '我的預訂',
                 'bookings.upcoming': '即將到來',
                 'bookings.past': '歷史預訂',
                 'bookings.cancelled': '已取消',
                 'bookings.confirmed': '已確認',
+                'bookings.leave': '已請假',
                 'bookings.cancel': '取消預訂',
                 'bookings.absent': '請假',
+                'bookings.noBookings': '暫無預訂記錄',
                 'settings.title': '設置',
                 'settings.profile': '個人資料',
                 'settings.name': '姓名',
@@ -646,20 +664,48 @@
                 'modal.booking.adHoc': '單次預訂',
                 'modal.booking.date': '選擇日期',
                 'modal.booking.notes': '備註 (可選)',
+                'modal.booking.confirm': '確認預訂',
                 'modal.cancel': '取消',
-                'modal.booking.confirm': '確認預訂'
+                'modal.confirm': '確認',
+                'success.booking': '課程預訂',
+                'success.cancel': '取消預訂',
+                'success.leave': '請假申請',
+                'success.update': '更新設置',
+                'error.courseFull': '該課程已滿',
+                'error.alreadyBooked': '您已預訂該課程',
+                'error.invalidDate': '請選擇有效的日期',
+                'error.general': '操作失敗，請重試',
+                'teacherSummary.title': '老師課程報名彙總',
+                'teacherSummary.stats': '課程報名統計',
+                'teacherSummary.details': '學員報名詳情',
+                'teacherSummary.total': '總名額',
+                'teacherSummary.booked': '已報名',
+                'teacherSummary.remaining': '剩餘名額',
+                'teacherSummary.students': '學員列表',
+                'teacherSummary.noBookings': '暫無報名記錄',
+                'nav.teacherSummary': '老師彙總',
+                'teacherSummary.title': '老師課程報名彙總',
+                'teacherSummary.stats': '課程報名統計',
+                'teacherSummary.details': '學員報名詳情',
+                'teacherSummary.total': '總名額',
+                'teacherSummary.booked': '已報名',
+                'teacherSummary.remaining': '剩餘名額',
+                'teacherSummary.students': '學員列表',
+                'teacherSummary.noBookings': '暫無報名記錄',
+                'nav.teacherSummary': '老師彙總'
             },
             'en-US': {
                 'app.title': 'RT Atelier',
-                'nav.language': 'Language',
-                'nav.profile': 'Profile',
                 'nav.calendar': 'Calendar',
                 'nav.courses': 'Courses',
                 'nav.myBookings': 'My Bookings',
                 'nav.settings': 'Settings',
+                'nav.language': 'Language',
+                'nav.profile': 'Profile',
                 'calendar.title': 'Course Calendar',
                 'calendar.filter': 'Filter',
                 'calendar.addBooking': 'Add Booking',
+                'calendar.todayCourses': 'Today\'s Courses',
                 'calendar.sunday': 'Sun',
                 'calendar.monday': 'Mon',
                 'calendar.tuesday': 'Tue',
@@ -667,28 +713,38 @@
                 'calendar.thursday': 'Thu',
                 'calendar.friday': 'Fri',
                 'calendar.saturday': 'Sat',
-                'calendar.todayCourses': 'Today\'s Courses',
                 'courses.title': 'Course List',
                 'courses.filter.all': 'All Courses',
-                'courses.filter.ballet': 'Ballet',
-                'courses.filter.modern': 'Modern Dance',
-                'courses.filter.jazz': 'Jazz',
-                'courses.filter.contemporary': 'Contemporary',
-                'courses.schedule': 'Schedule:',
-                'courses.capacity': 'Capacity:',
-                'courses.level': 'Level:',
+                'courses.filter.latin': 'Latin Dance',
+                'courses.level.all': 'All Levels',
+                'courses.level.beginner': 'Beginner',
+                'courses.level.intermediate': 'Intermediate',
+                'courses.level.advanced': 'Advanced',
+                'courses.day.all': 'All Days',
+                'courses.day.monday': 'Monday',
+                'courses.day.tuesday': 'Tuesday',
+                'courses.day.wednesday': 'Wednesday',
+                'courses.day.thursday': 'Thursday',
+                'courses.day.friday': 'Friday',
+                'courses.day.saturday': 'Saturday',
+                'courses.day.sunday': 'Sunday',
+                'courses.time.all': 'All Times',
+                'courses.time.morning': 'Morning',
+                'courses.time.afternoon': 'Afternoon',
+                'courses.time.evening': 'Evening',
                 'courses.bookNow': 'Book Now',
-                'courses.details': 'Details',
-                'courses.full': 'Full',
+                'courses.details': 'View Details',
                 'bookings.title': 'My Bookings',
                 'bookings.upcoming': 'Upcoming',
-                'bookings.past': 'Past Bookings',
+                'bookings.past': 'Past',
                 'bookings.cancelled': 'Cancelled',
                 'bookings.confirmed': 'Confirmed',
+                'bookings.leave': 'Leave Requested',
                 'bookings.cancel': 'Cancel Booking',
-                'bookings.absent': 'Report Absence',
+                'bookings.absent': 'Request Leave',
+                'bookings.noBookings': 'No booking records',
                 'settings.title': 'Settings',
-                'settings.profile': 'Profile',
+                'settings.profile': 'Personal Information',
                 'settings.name': 'Name',
                 'settings.email': 'Email',
                 'settings.phone': 'Phone',
@@ -699,26 +755,50 @@
                 'settings.saveProfile': 'Save Profile',
                 'settings.notifications': 'Notification Settings',
                 'settings.notifications.courseReminder': 'Course Reminders',
-                'settings.notifications.courseReminderDesc': 'Receive reminders 24 hours before your course',
+                'settings.notifications.courseReminderDesc': 'Receive reminders 24 hours before course starts',
                 'settings.notifications.newCourse': 'New Course Notifications',
-                'settings.notifications.newCourseDesc': 'Get notified when new courses are added',
+                'settings.notifications.newCourseDesc': 'Receive notifications when new courses are added',
                 'settings.notifications.promotion': 'Promotions',
                 'settings.notifications.promotionDesc': 'Receive notifications about course discounts and events',
                 'settings.saveNotifications': 'Save Notification Settings',
                 'modal.booking.title': 'Book Course',
                 'modal.booking.course': 'Select Course',
                 'modal.booking.type': 'Booking Type',
-                'modal.booking.regular': 'Regular Booking',
-                'modal.booking.adHoc': 'Ad-hoc Booking',
+                'modal.booking.regular': 'Regular Schedule',
+                'modal.booking.adHoc': 'One-time Booking',
                 'modal.booking.date': 'Select Date',
                 'modal.booking.notes': 'Notes (Optional)',
+                'modal.booking.confirm': 'Confirm Booking',
                 'modal.cancel': 'Cancel',
-                'modal.booking.confirm': 'Confirm Booking'
+                'modal.confirm': 'Confirm',
+                'success.booking': 'Course booking',
+                'success.cancel': 'Booking cancellation',
+                'success.leave': 'Leave request',
+                'success.update': 'Settings update',
+                'error.courseFull': 'The course is full',
+                'error.alreadyBooked': 'You have already booked this course',
+                'error.invalidDate': 'Please select a valid date',
+                'error.general': 'Operation failed, please try again',
+                'teacherSummary.title': 'Teacher Course Registration Summary',
+                'teacherSummary.stats': 'Course Registration Statistics',
+                'teacherSummary.details': 'Student Registration Details',
+                'teacherSummary.total': 'Total Capacity',
+                'teacherSummary.booked': 'Booked',
+                'teacherSummary.remaining': 'Remaining',
+                'teacherSummary.students': 'Student List',
+                'teacherSummary.noBookings': 'No registration records',
+                'nav.teacherSummary': 'Teacher Summary',
+                'teacherSummary.title': 'Teacher Course Registration Summary',
+                'teacherSummary.stats': 'Course Registration Statistics',
+                'teacherSummary.details': 'Student Registration Details',
+                'teacherSummary.total': 'Total Capacity',
+                'teacherSummary.booked': 'Booked',
+                'teacherSummary.remaining': 'Remaining',
+                'teacherSummary.students': 'Student List',
+                'teacherSummary.noBookings': 'No registration records',
+                'nav.teacherSummary': 'Teacher Summary'
             }
         };
-
-        // 当前语言设置
-        let currentLanguage = 'zh-CN';
 
         // 课程数据
         const courses = [
@@ -727,211 +807,463 @@
                 name: {
                     'zh-CN': '躍舞 - 8-9pm (三) 成人拉丁舞班',
                     'zh-TW': '躍舞 - 8-9pm (三) 成人拉丁舞班',
-                    'en-US': 'Yue Wu - 8-9pm (Wed) Adult Latin Dance'
+                    'en-US': 'Leap Dance - 8-9pm (Wed) Adult Latin Dance Class'
                 },
-                type: 'latin',
                 description: {
-                    'zh-CN': '成人拉丁舞课程，适合所有级别',
-                    'zh-TW': '成人拉丁舞課程，適合所有級別',
-                    'en-US': 'Adult Latin dance course for all levels'
+                    'zh-CN': '成人拉丁舞班 - 适合初学者和中级舞者。在轻松友好的环境中学习拉丁舞基础。',
+                    'zh-TW': '成人拉丁舞班 - 適合初學者和中級舞者。在輕鬆友好的環境中學習拉丁舞基礎。',
+                    'en-US': 'Adult Latin Dance Class - Perfect for beginners and intermediate dancers. Learn the fundamentals of Latin dance in a fun and supportive environment.'
                 },
-                schedule: [
-                    { day: 3, time: '20:00-21:00' }  // 周三
-                ],
+                teacher: 'Tansy',
                 capacity: 6,
-                currentBookings: 3,
-                instructor: {
-                    'zh-CN': 'Tansy老师',
-                    'zh-TW': 'Tansy老師',
-                    'en-US': 'Teacher Tansy'
-                },
-                level: {
-                    'zh-CN': '所有级别',
-                    'zh-TW': '所有級別',
-                    'en-US': 'All Levels'
-                }
+                schedule: [
+                    {
+                        day: 3, // 周三
+                        time: '8-9pm'
+                    }
+                ],
+                type: 'latin',
+                level: 'beginner'
             },
             {
                 id: 2,
                 name: {
                     'zh-CN': '躍舞 - 10-11am (日) 成人拉丁舞班',
                     'zh-TW': '躍舞 - 10-11am (日) 成人拉丁舞班',
-                    'en-US': 'Yue Wu - 10-11am (Sun) Adult Latin Dance'
+                    'en-US': 'Leap Dance - 10-11am (Sun) Adult Latin Dance Class'
                 },
-                type: 'latin',
                 description: {
-                    'zh-CN': '成人拉丁舞课程，适合所有级别',
-                    'zh-TW': '成人拉丁舞課程，適合所有級別',
-                    'en-US': 'Adult Latin dance course for all levels'
+                    'zh-CN': '成人拉丁舞班 - 早起鸟儿的晨间课程。以活力和节奏开始您的周日。',
+                    'zh-TW': '成人拉丁舞班 - 早起鳥兒的晨間課程。以活力和節奏開始您的周日。',
+                    'en-US': 'Adult Latin Dance Class - Morning session for early birds. Perfect way to start your Sunday with energy and rhythm.'
                 },
-                schedule: [
-                    { day: 0, time: '10:00-11:00' }  // 周日
-                ],
+                teacher: 'Tansy',
                 capacity: 6,
-                currentBookings: 4,
-                instructor: {
-                    'zh-CN': 'Tansy老师',
-                    'zh-TW': 'Tansy老師',
-                    'en-US': 'Teacher Tansy'
-                },
-                level: {
-                    'zh-CN': '所有级别',
-                    'zh-TW': '所有級別',
-                    'en-US': 'All Levels'
-                }
+                schedule: [
+                    {
+                        day: 0, // 周日
+                        time: '10-11am'
+                    }
+                ],
+                type: 'latin',
+                level: 'beginner'
             },
             {
                 id: 3,
                 name: {
                     'zh-CN': '躍舞 - 3:30-5pm (六) 青少年拉丁舞班',
                     'zh-TW': '躍舞 - 3:30-5pm (六) 青少年拉丁舞班',
-                    'en-US': 'Yue Wu - 3:30-5pm (Sat) Teen Latin Dance'
+                    'en-US': 'Leap Dance - 3:30-5pm (Sat) Teen Latin Dance Class'
                 },
-                type: 'latin',
                 description: {
-                    'zh-CN': '青少年拉丁舞课程，适合13-18岁',
-                    'zh-TW': '青少年拉丁舞課程，適合13-18歲',
-                    'en-US': 'Latin dance course for teenagers aged 13-18'
+                    'zh-CN': '青少年拉丁舞班 - 专为13-18岁青少年设计。在社交活跃的环境中学习拉丁舞。',
+                    'zh-TW': '青少年拉丁舞班 - 專為13-18歲青少年設計。在社交活躍的環境中學習拉丁舞。',
+                    'en-US': 'Teen Latin Dance Class - Specially designed for teenagers aged 13-18. Learn Latin dance in a social and energetic setting.'
                 },
-                schedule: [
-                    { day: 6, time: '15:30-17:00' }  // 周六
-                ],
+                teacher: 'Tansy',
                 capacity: 6,
-                currentBookings: 2,
-                instructor: {
-                    'zh-CN': 'Tansy老师',
-                    'zh-TW': 'Tansy老師',
-                    'en-US': 'Teacher Tansy'
-                },
-                level: {
-                    'zh-CN': '青少年',
-                    'zh-TW': '青少年',
-                    'en-US': 'Teenagers'
-                }
+                schedule: [
+                    {
+                        day: 6, // 周六
+                        time: '3:30-5pm'
+                    }
+                ],
+                type: 'latin',
+                level: 'intermediate'
             },
             {
                 id: 4,
                 name: {
                     'zh-CN': '躍舞 - 1-2pm (六) 儿童拉丁舞启蒙班',
                     'zh-TW': '躍舞 - 1-2pm (六) 兒童拉丁舞啟蒙班',
-                    'en-US': 'Yue Wu - 1-2pm (Sat) Children Latin Dance Intro'
+                    'en-US': 'Leap Dance - 1-2pm (Sat) Children\'s Latin Dance Class'
                 },
-                type: 'latin',
                 description: {
-                    'zh-CN': '儿童拉丁舞启蒙课程，适合6-8岁',
-                    'zh-TW': '兒童拉丁舞啟蒙課程，適合6-8歲',
-                    'en-US': 'Latin dance introduction for children aged 6-8'
+                    'zh-CN': '儿童拉丁舞启蒙班 - 为6-9岁儿童设计的拉丁舞入门课程。专注于基础动作和协调性。',
+                    'zh-TW': '兒童拉丁舞啟蒙班 - 為6-9歲兒童設計的拉丁舞入門課程。專注於基礎動作和協調性。',
+                    'en-US': 'Children\'s Latin Dance Class - Introduction to Latin dance for young children aged 6-9. Focus on basic movements and coordination.'
                 },
-                schedule: [
-                    { day: 6, time: '13:00-14:00' }  // 周六
-                ],
+                teacher: 'Tansy',
                 capacity: 6,
-                currentBookings: 5,
-                instructor: {
-                    'zh-CN': 'Tansy老师',
-                    'zh-TW': 'Tansy老師',
-                    'en-US': 'Teacher Tansy'
-                },
-                level: {
-                    'zh-CN': '启蒙班',
-                    'zh-TW': '啟蒙班',
-                    'en-US': 'Introduction'
-                }
+                schedule: [
+                    {
+                        day: 6, // 周六
+                        time: '1-2pm'
+                    }
+                ],
+                type: 'latin',
+                level: 'beginner'
             },
             {
                 id: 5,
                 name: {
                     'zh-CN': '躍舞 - 1-2pm (一) 成人拉丁舞班',
                     'zh-TW': '躍舞 - 1-2pm (一) 成人拉丁舞班',
-                    'en-US': 'Yue Wu - 1-2pm (Mon) Adult Latin Dance'
+                    'en-US': 'Leap Dance - 1-2pm (Mon) Adult Latin Dance Class'
                 },
-                type: 'latin',
                 description: {
-                    'zh-CN': '成人拉丁舞课程，适合所有级别',
-                    'zh-TW': '成人拉丁舞課程，適合所有級別',
-                    'en-US': 'Adult Latin dance course for all levels'
+                    'zh-CN': '成人拉丁舞班 - 周一晚间课程。工作后通过舞蹈放松身心的完美选择。',
+                    'zh-TW': '成人拉丁舞班 - 週一晚間課程。工作後通過舞蹈放鬆身心的完美選擇。',
+                    'en-US': 'Adult Latin Dance Class - Monday evening session. Perfect for unwinding after work with some dance moves.'
                 },
-                schedule: [
-                    { day: 1, time: '13:00-14:00' }  // 周一
-                ],
+                teacher: 'Tansy',
                 capacity: 6,
-                currentBookings: 1,
-                instructor: {
-                    'zh-CN': 'Tansy老师',
-                    'zh-TW': 'Tansy老師',
-                    'en-US': 'Teacher Tansy'
-                },
-                level: {
-                    'zh-CN': '所有级别',
-                    'zh-TW': '所有級別',
-                    'en-US': 'All Levels'
-                }
+                schedule: [
+                    {
+                        day: 1, // 周一
+                        time: '1-2pm'
+                    }
+                ],
+                type: 'latin',
+                level: 'intermediate'
             },
             {
                 id: 6,
                 name: {
                     'zh-CN': '躍舞 - 2-3pm (六) 儿童拉丁舞初班',
                     'zh-TW': '躍舞 - 2-3pm (六) 兒童拉丁舞初班',
-                    'en-US': 'Yue Wu - 2-3pm (Sat) Children Latin Dance Beginner'
+                    'en-US': 'Leap Dance - 2-3pm (Sat) Children\'s Latin Dance Class'
                 },
-                type: 'latin',
                 description: {
-                    'zh-CN': '儿童拉丁舞初级课程，适合9-12岁',
-                    'zh-TW': '兒童拉丁舞初級課程，適合9-12歲',
-                    'en-US': 'Beginner Latin dance course for children aged 9-12'
+                    'zh-CN': '儿童拉丁舞初班 - 为7-12岁已完成启蒙班的儿童设计。更高级的技巧和编舞。',
+                    'zh-TW': '兒童拉丁舞初班 - 為7-12歲已完成啟蒙班的兒童設計。更高級的技巧和編舞。',
+                    'en-US': 'Children\'s Latin Dance Class - Next level for children aged 7-12 who have completed the beginner class. More advanced techniques and choreography.'
                 },
-                schedule: [
-                    { day: 6, time: '14:00-15:00' }  // 周六
-                ],
+                teacher: 'Tansy',
                 capacity: 6,
-                currentBookings: 0,
-                instructor: {
-                    'zh-CN': 'Tansy老师',
-                    'zh-TW': 'Tansy老師',
-                    'en-US': 'Teacher Tansy'
-                },
-                level: {
-                    'zh-CN': '初级',
-                    'zh-TW': '初級',
-                    'en-US': 'Beginner'
-                }
+                schedule: [
+                    {
+                        day: 6, // 周六
+                        time: '2-3pm'
+                    }
+                ],
+                type: 'latin',
+                level: 'intermediate'
             }
         ];
 
         // 用户预订数据
-        const bookings = [
+        let bookings = [
             {
                 id: 1,
                 userId: 'user123',
-                courseId: 1,
-                date: '2025-07-22',
+                courseId: 1, // 躍舞 - 8-9pm (三) 成人拉丁舞班
+                date: '2026-03-18', // 今天，周三
                 type: 'regular',
                 status: 'confirmed'
             },
             {
                 id: 2,
                 userId: 'user123',
-                courseId: 3,
-                date: '2025-07-26',
+                courseId: 2, // 躍舞 - 10-11am (日) 成人拉丁舞班
+                date: '2026-03-21', // 周日
+                type: 'regular',
+                status: 'confirmed'
+            },
+            {
+                id: 3,
+                userId: 'user123',
+                courseId: 5, // 躍舞 - 1-2pm (一) 成人拉丁舞班
+                date: '2026-03-22', // 下周一
                 type: 'ad-hoc',
                 status: 'confirmed'
+            },
+            {
+                id: 4,
+                userId: 'user123',
+                courseId: 3, // 躍舞 - 3:30-5pm (六) 青少年拉丁舞班
+                date: '2026-03-19', // 明天，周六
+                type: 'ad-hoc',
+                status: 'leave' // 已请假
+            },
+            {
+                id: 5,
+                userId: 'user123',
+                courseId: 1, // 躍舞 - 8-9pm (三) 成人拉丁舞班
+                date: '2026-03-11', // 上周三
+                type: 'regular',
+                status: 'cancelled' // 已取消
             }
         ];
 
-        // 当前日期
-        const today = new Date();
-        let currentDate = new Date();
+        // 当前日期 - 设置为2026年3月18日
+        const today = new Date('2026-03-18');
+        let currentDate = new Date('2026-03-18');
+        
+        // 当前语言
+        let currentLanguage = 'zh-CN';
+        
+        // 当前活动页面
+        let currentPage = 'calendar';
+        
+        // 当前选中的预订ID（用于确认操作）
+        let selectedBookingId = null;
+        
+        // 当前操作类型（用于确认操作）
+        let currentAction = '';
 
-        // DOM 加载完成后执行
+        // DOM 元素
+        const navLinks = document.querySelectorAll('.nav-link, .footer-nav-link');
+        const pageContents = document.querySelectorAll('.page-content');
+        const langToggle = document.getElementById('lang-toggle');
+        const languageDropdown = document.getElementById('language-dropdown');
+        const languageOptions = document.querySelectorAll('.language-option');
+        const addBookingBtn = document.getElementById('add-booking-btn');
+        const bookingModal = document.getElementById('booking-modal');
+        const closeBookingModal = document.getElementById('close-booking-modal');
+        const cancelBooking = document.getElementById('cancel-booking');
+        const confirmModal = document.getElementById('confirm-modal');
+        const confirmTitle = document.getElementById('confirm-title');
+        const confirmMessage = document.getElementById('confirm-message');
+        const confirmCancel = document.getElementById('confirm-cancel');
+        const confirmOk = document.getElementById('confirm-ok');
+        const successMessage = document.getElementById('success-message');
+        const successText = document.getElementById('success-text');
+        const prevMonthBtn = document.getElementById('prev-month');
+        const nextMonthBtn = document.getElementById('next-month');
+        const bookingTabs = document.querySelectorAll('.booking-tab');
+        const courseSelect = document.getElementById('course-select');
+        const bookingTypeRadios = document.querySelectorAll('input[name="booking-type"]');
+        const adHocDateDiv = document.getElementById('ad-hoc-date');
+        const adHocDateInput = adHocDateDiv.querySelector('input');
+        const saveProfileBtn = document.getElementById('save-profile');
+        const saveNotificationsBtn = document.getElementById('save-notifications');
+        const preferredLanguageSelect = document.getElementById('preferred-language');
+        const teacherSummaryBtn = document.getElementById('teacher-summary');
+
+        // 初始化应用
         document.addEventListener('DOMContentLoaded', function() {
-            // 初始化页面
-            initCalendar();
-            initEventListeners();
+            // 初始化语言
             updateLanguage(currentLanguage);
             
-            // 显示成功消息示例
-            showSuccessMessage('欢迎使用RT Atelier舞蹈课程预订系统！');
+            // 初始化日历
+            initCalendar();
+            
+            // 初始化课程列表
+            renderCourses();
+            
+            // 初始化预订列表
+            filterBookings('upcoming');
+            
+            // 初始化课程选择下拉框
+            populateCourseSelect();
+            
+            // 设置日期输入的最小日期为今天
+            const todayString = today.toISOString().split('T')[0];
+            adHocDateInput.min = todayString;
+            
+            // 设置首选语言选择
+            preferredLanguageSelect.value = currentLanguage;
+            
+            // 绑定事件监听器
+            bindEventListeners();
         });
+
+        // 绑定事件监听器
+        function bindEventListeners() {
+            // 导航链接点击事件
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.getAttribute('data-page');
+                    navigateToPage(page);
+                });
+            });
+            
+            // 语言切换按钮点击事件
+            langToggle.addEventListener('click', function() {
+                languageDropdown.classList.toggle('hidden');
+            });
+            
+            // 语言选项点击事件
+            languageOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    updateLanguage(lang);
+                    languageDropdown.classList.add('hidden');
+                });
+            });
+            
+            // 点击页面其他地方关闭语言下拉框
+            document.addEventListener('click', function(e) {
+                if (!langToggle.contains(e.target) && !languageDropdown.contains(e.target)) {
+                    languageDropdown.classList.add('hidden');
+                }
+            });
+            
+            // 新增预订按钮点击事件
+            addBookingBtn.addEventListener('click', function() {
+                openBookingModal();
+            });
+            
+            // 关闭预订模态框按钮点击事件
+            closeBookingModal.addEventListener('click', function() {
+                closeBookingModalFunc();
+            });
+            
+            // 取消预订按钮点击事件
+            cancelBooking.addEventListener('click', function() {
+                closeBookingModalFunc();
+            });
+            
+            // 预订表单提交事件
+            document.getElementById('booking-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitBooking();
+            });
+            
+            // 预订类型单选按钮变更事件
+            bookingTypeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'ad-hoc') {
+                        adHocDateDiv.classList.remove('hidden');
+                    } else {
+                        adHocDateDiv.classList.add('hidden');
+                    }
+                });
+            });
+            
+            // 确认模态框取消按钮点击事件
+            confirmCancel.addEventListener('click', function() {
+                closeConfirmModal();
+            });
+            
+            // 确认模态框确认按钮点击事件
+            confirmOk.addEventListener('click', function() {
+                executeConfirmedAction();
+            });
+            
+            // 上个月按钮点击事件
+            prevMonthBtn.addEventListener('click', function() {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                initCalendar();
+            });
+            
+            // 下个月按钮点击事件
+            nextMonthBtn.addEventListener('click', function() {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                initCalendar();
+            });
+            
+            // 预订标签点击事件
+            bookingTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const status = this.getAttribute('data-status');
+                    filterBookings(status);
+                });
+            });
+            
+            // 保存个人资料按钮点击事件
+            saveProfileBtn.addEventListener('click', function() {
+                saveProfile();
+            });
+            
+            // 保存通知设置按钮点击事件
+            saveNotificationsBtn.addEventListener('click', function() {
+                saveNotifications();
+            });
+            
+            // 老师汇总按钮点击事件
+            teacherSummaryBtn.addEventListener('click', function() {
+                navigateToPage('teacher-summary');
+            });
+            
+            // 首选语言选择变更事件
+            preferredLanguageSelect.addEventListener('change', function() {
+                const lang = this.value;
+                updateLanguage(lang);
+            });
+            
+            // 课程搜索输入事件
+            document.getElementById('courses-search').addEventListener('input', function() {
+                renderCourses();
+            });
+            
+            // 课程筛选变更事件
+            document.getElementById('course-filter').addEventListener('change', function() {
+                renderCourses();
+            });
+        }
+
+        // 导航到指定页面
+        function navigateToPage(page) {
+            // 更新当前页面
+            currentPage = page;
+            
+            // 更新导航链接样式
+            navLinks.forEach(link => {
+                if (link.getAttribute('data-page') === page) {
+                    link.classList.add('text-secondary', 'border-secondary');
+                    link.classList.remove('text-white', 'text-gray-500', 'border-transparent');
+                } else {
+                    link.classList.remove('text-secondary', 'border-secondary');
+                    if (link.classList.contains('nav-link')) {
+                        link.classList.add('text-white', 'hover:text-secondary');
+                    } else {
+                        link.classList.add('text-gray-500');
+                    }
+                }
+            });
+            
+            // 显示对应页面内容
+            pageContents.forEach(content => {
+                if (content.id === `${page}-page`) {
+                    content.classList.remove('hidden');
+                    // 添加页面进入动画
+                    content.classList.add('page-enter');
+                    setTimeout(() => {
+                        content.classList.add('page-enter-active');
+                    }, 10);
+                    setTimeout(() => {
+                        content.classList.remove('page-enter', 'page-enter-active');
+                    }, 300);
+                } else {
+                    content.classList.add('hidden');
+                }
+            });
+            
+            // 根据页面执行特定操作
+            if (page === 'calendar') {
+                initCalendar();
+            } else if (page === 'courses') {
+                renderCourses();
+            } else if (page === 'bookings') {
+                filterBookings('upcoming');
+            } else if (page === 'teacher-summary') {
+                renderTeacherSummary();
+            }
+        }
+
+        // 更新语言
+        function updateLanguage(lang) {
+            currentLanguage = lang;
+            
+            // 更新页面元素文本
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // 更新页面标题
+            document.title = `RT Atelier - ${translations[lang]['app.title']}`;
+            
+            // 更新首选语言选择
+            preferredLanguageSelect.value = lang;
+            
+            // 根据当前页面重新渲染内容
+            if (currentPage === 'calendar') {
+                initCalendar();
+            } else if (currentPage === 'courses') {
+                renderCourses();
+            } else if (currentPage === 'bookings') {
+                filterBookings('upcoming');
+            }
+            
+            // 更新课程选择下拉框
+            populateCourseSelect();
+        }
 
         // 初始化日历
         function initCalendar() {
@@ -992,27 +1324,49 @@
                 dateNumber.textContent = day;
                 dayElement.appendChild(dateNumber);
                 
-                // 添加当天的课程
+                // 添加当天的课程（只显示已预订的课程）
                 const currentDateObj = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-                const dayOfWeek = currentDateObj.getDay();
+                const dateString = currentDateObj.toISOString().split('T')[0]; // 格式：YYYY-MM-DD
+                const dayOfWeek = currentDateObj.getDay(); // 0-6，表示周日到周六
                 
-                // 查找当天有哪些课程
-                const dayCourses = courses.filter(course => 
-                    course.schedule.some(s => s.day === dayOfWeek)
-                );
+                // 查找用户当天已预订的课程（只显示已确认和已请假的，不显示已取消的）
+                const userBookingsForDay = bookings.filter(booking => {
+                    // 检查日期是否匹配
+                    if (booking.date === dateString && booking.status !== 'cancelled') {
+                        // 检查课程是否在这一天有安排
+                        const course = courses.find(c => c.id === booking.courseId);
+                        return course && course.schedule.some(s => s.day === dayOfWeek);
+                    }
+                    return false;
+                });
                 
-                if (dayCourses.length > 0) {
+                if (userBookingsForDay.length > 0) {
                     dayElement.classList.add('has-event');
                     
                     // 添加课程列表
                     const coursesList = document.createElement('div');
                     coursesList.className = 'space-y-1';
                     
-                    dayCourses.forEach(course => {
-                        const courseItem = document.createElement('div');
-                        courseItem.className = 'text-xs p-1 rounded bg-primary bg-opacity-10 text-primary truncate';
-                        courseItem.textContent = `${course.name[currentLanguage]} ${course.schedule.find(s => s.day === dayOfWeek).time}`;
-                        coursesList.appendChild(courseItem);
+                    userBookingsForDay.forEach(booking => {
+                        const course = courses.find(c => c.id === booking.courseId);
+                        if (course) {
+                            const courseItem = document.createElement('div');
+                            
+                            // 根据预订状态设置不同的样式
+                            if (booking.status === 'leave') {
+                                courseItem.className = 'text-xs p-1 rounded bg-yellow-100 text-yellow-800 truncate';
+                            } else {
+                                courseItem.className = 'text-xs p-1 rounded bg-secondary bg-opacity-10 text-secondary truncate';
+                            }
+                            
+                            // 查找课程在这一天的具体时间
+                            const dayOfWeek = currentDateObj.getDay();
+                            const schedule = course.schedule.find(s => s.day === dayOfWeek);
+                            const time = schedule ? schedule.time : '';
+                            
+                            courseItem.textContent = `${course.name[currentLanguage]} ${time}`;
+                            coursesList.appendChild(courseItem);
+                        }
                     });
                     
                     dayElement.appendChild(coursesList);
@@ -1020,349 +1374,626 @@
                 
                 calendarGrid.appendChild(dayElement);
             }
+            
+            // 渲染今日课程
+            renderTodayCourses();
         }
 
-        // 初始化事件监听器
-        function initEventListeners() {
-            // 导航链接点击事件
-            document.querySelectorAll('.nav-link, .footer-nav-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const targetPage = this.getAttribute('data-page');
-                    navigateToPage(targetPage);
-                });
-            });
+        // 渲染今日课程
+        function renderTodayCourses() {
+            const todayCoursesContainer = document.getElementById('today-courses');
+            const todayString = today.toISOString().split('T')[0];
             
-            // 个人中心按钮点击事件
-            document.getElementById('user-profile').addEventListener('click', function() {
-                // 导航到设置页面
-                navigateToPage('settings');
-            });
+            // 查找今天的预订课程
+            const todayBookings = bookings.filter(booking => 
+                booking.date === todayString && booking.status !== 'cancelled'
+            );
             
-            // 语言切换下拉菜单
-            const langToggle = document.getElementById('lang-toggle');
-            const langDropdown = document.getElementById('language-dropdown');
-            
-            langToggle.addEventListener('click', function() {
-                langDropdown.classList.toggle('hidden');
-            });
-            
-            // 点击其他地方关闭下拉菜单
-            document.addEventListener('click', function(e) {
-                if (!langToggle.contains(e.target) && !langDropdown.contains(e.target)) {
-                    langDropdown.classList.add('hidden');
-                }
-            });
-            
-            // 语言选项点击事件
-            document.querySelectorAll('.language-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    const lang = this.getAttribute('data-lang');
-                    changeLanguage(lang);
-                    langDropdown.classList.add('hidden');
-                });
-            });
-            
-            // 日历导航按钮
-            document.getElementById('prev-month').addEventListener('click', function() {
-                currentDate.setMonth(currentDate.getMonth() - 1);
-                initCalendar();
-            });
-            
-            document.getElementById('next-month').addEventListener('click', function() {
-                currentDate.setMonth(currentDate.getMonth() + 1);
-                initCalendar();
-            });
-            
-            // 预订模态框
-            const bookingModal = document.getElementById('booking-modal');
-            const addBookingBtn = document.getElementById('add-booking-btn');
-            const closeBookingModal = document.getElementById('close-booking-modal');
-            const cancelBooking = document.getElementById('cancel-booking');
-            
-            addBookingBtn.addEventListener('click', function() {
-                bookingModal.classList.remove('hidden');
-            });
-            
-            closeBookingModal.addEventListener('click', function() {
-                bookingModal.classList.add('hidden');
-            });
-            
-            cancelBooking.addEventListener('click', function() {
-                bookingModal.classList.add('hidden');
-            });
-            
-            // 点击模态框外部关闭
-            bookingModal.addEventListener('click', function(e) {
-                if (e.target === bookingModal) {
-                    bookingModal.classList.add('hidden');
-                }
-            });
-            
-            // 预订类型切换
-            const bookingTypeRadios = document.querySelectorAll('input[name="booking-type"]');
-            const adHocDateField = document.getElementById('ad-hoc-date');
-            
-            bookingTypeRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    if (this.value === 'ad-hoc') {
-                        adHocDateField.classList.remove('hidden');
-                    } else {
-                        adHocDateField.classList.add('hidden');
-                    }
-                });
-            });
-            
-            // 预订表单提交
-            const bookingForm = document.getElementById('booking-form');
-            
-            bookingForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // 模拟预订提交
-                bookingModal.classList.add('hidden');
-                showSuccessMessage(translations[currentLanguage]['modal.booking.confirm'] + '成功！');
-            });
-            
-            // 预订取消按钮
-            document.querySelectorAll('.booking-item .btn-danger').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    showConfirmModal(
-                        '取消预订',
-                        '您确定要取消这个预订吗？',
-                        function() {
-                            // 模拟取消操作
-                            showSuccessMessage('预订已成功取消');
-                        }
-                    );
-                });
-            });
-            
-            // 请假按钮
-            document.querySelectorAll('.booking-item .btn-secondary').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    showConfirmModal(
-                        '请假',
-                        '您确定要为此课程请假吗？',
-                        function() {
-                            // 模拟请假操作
-                            showSuccessMessage('已成功提交请假');
-                        }
-                    );
-                });
-            });
-            
-            // 课程预订按钮
-            document.querySelectorAll('.course-card .btn-primary').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    bookingModal.classList.remove('hidden');
-                });
-            });
-            
-            // 设置保存按钮
-            document.querySelectorAll('#settings-page .btn-primary').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    showSuccessMessage('设置已成功保存');
-                });
-            });
-            
-            // 预订标签切换
-            document.querySelectorAll('.booking-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // 更新标签样式
-                    document.querySelectorAll('.booking-tab').forEach(t => {
-                        t.classList.remove('border-secondary', 'text-secondary');
-                        t.classList.add('border-transparent', 'text-gray-500');
-                    });
-                    this.classList.remove('border-transparent', 'text-gray-500');
-                    this.classList.add('border-secondary', 'text-secondary');
-                    
-                    // 获取选中的状态
-                    const status = this.getAttribute('data-status');
-                    
-                    // 模拟根据状态筛选预订
-                    filterBookings(status);
-                });
-            });
-        }
-
-        // 页面导航
-        function navigateToPage(pageId) {
-            // 隐藏所有页面
-            document.querySelectorAll('.page-content').forEach(page => {
-                page.classList.add('hidden');
-            });
-            
-            // 显示目标页面
-            const targetPage = document.getElementById(`${pageId}-page`);
-            if (targetPage) {
-                targetPage.classList.remove('hidden');
-                
-                // 添加页面进入动画
-                targetPage.classList.add('page-enter');
-                setTimeout(() => {
-                    targetPage.classList.add('page-enter-active');
-                }, 10);
-                setTimeout(() => {
-                    targetPage.classList.remove('page-enter', 'page-enter-active');
-                }, 300);
+            if (todayBookings.length === 0) {
+                todayCoursesContainer.innerHTML = `
+                    <div class="text-center py-4 text-gray-500">
+                        <i class="fa fa-calendar-o text-2xl mb-2"></i>
+                        <p>${translations[currentLanguage]['bookings.noBookings']}</p>
+                    </div>
+                `;
+                return;
             }
             
-            // 更新导航链接状态
-            document.querySelectorAll('.nav-link').forEach(link => {
-                if (link.getAttribute('data-page') === pageId) {
-                    link.classList.add('text-secondary', 'border-b-2', 'border-secondary');
-                    link.classList.remove('text-white', 'hover:text-secondary');
-                } else {
-                    link.classList.remove('text-secondary', 'border-b-2', 'border-secondary');
-                    link.classList.add('text-white', 'hover:text-secondary');
-                }
-            });
-            
-            // 更新底部导航状态
-            document.querySelectorAll('.footer-nav-link').forEach(link => {
-                if (link.getAttribute('data-page') === pageId) {
-                    link.classList.add('text-secondary');
-                    link.classList.remove('text-gray-500');
-                } else {
-                    link.classList.remove('text-secondary');
-                    link.classList.add('text-gray-500');
-                }
-            });
-        }
-
-        // 切换语言
-        function changeLanguage(lang) {
-            currentLanguage = lang;
-            updateLanguage(lang);
-            
-            // 重新初始化日历以更新月份名称
-            initCalendar();
-        }
-
-        // 更新页面语言
-        function updateLanguage(lang) {
-            document.querySelectorAll('[data-i18n]').forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                if (translations[lang][key]) {
-                    element.textContent = translations[lang][key];
-                }
-            });
-            
-            // 更新页面语言属性
-            document.documentElement.lang = lang;
-        }
-
-        // 显示确认模态框
-        function showConfirmModal(title, message, callback) {
-            const confirmModal = document.getElementById('confirm-modal');
-            const confirmTitle = document.getElementById('confirm-title');
-            const confirmMessage = document.getElementById('confirm-message');
-            const confirmOk = document.getElementById('confirm-ok');
-            const confirmCancel = document.getElementById('confirm-cancel');
-            
-            confirmTitle.textContent = title;
-            confirmMessage.textContent = message;
-            
-            confirmModal.classList.remove('hidden');
-            
-            // 确认按钮点击事件
-            const okHandler = function() {
-                confirmModal.classList.add('hidden');
-                callback();
-                confirmOk.removeEventListener('click', okHandler);
-            };
-            
-            confirmOk.addEventListener('click', okHandler);
-            
-            // 取消按钮点击事件
-            const cancelHandler = function() {
-                confirmModal.classList.add('hidden');
-                confirmCancel.removeEventListener('click', cancelHandler);
-            };
-            
-            confirmCancel.addEventListener('click', cancelHandler);
-            
-            // 点击模态框外部关闭
-            const outsideHandler = function(e) {
-                if (e.target === confirmModal) {
-                    confirmModal.classList.add('hidden');
-                    confirmModal.removeEventListener('click', outsideHandler);
-                }
-            };
-            
-            confirmModal.addEventListener('click', outsideHandler);
-        }
-
-        // 显示成功消息
-        function showSuccessMessage(message) {
-            const successToast = document.getElementById('success-toast');
-            const successMessage = document.getElementById('success-message');
-            
-            successMessage.textContent = message;
-            
-            // 显示消息
-            successToast.classList.remove('translate-y-20', 'opacity-0');
-            
-            // 3秒后隐藏
-            setTimeout(() => {
-                successToast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
-        }
-        
-        // 根据状态筛选预订
-        function filterBookings(status) {
-            const bookingsList = document.getElementById('bookings-list');
-            const bookingItems = bookingsList.querySelectorAll('.booking-item');
-            
-            // 根据状态显示或隐藏预订项目
-            bookingItems.forEach(item => {
-                if (status === 'upcoming') {
-                    // 显示所有预订（默认状态）
-                    item.classList.remove('hidden');
-                } else if (status === 'past') {
-                    // 模拟显示历史预订
-                    // 在实际应用中，这里应该根据预订日期和当前日期进行筛选
-                    if (item.querySelector('h3').textContent === '芭蕾基础班') {
-                        item.classList.remove('hidden');
-                    } else {
-                        item.classList.add('hidden');
+            // 渲染今日课程列表
+            todayCoursesContainer.innerHTML = '';
+            todayBookings.forEach(booking => {
+                const course = courses.find(c => c.id === booking.courseId);
+                if (course) {
+                    const courseElement = document.createElement('div');
+                    courseElement.className = 'bg-white rounded-lg shadow-sm p-3 border-l-4 border-secondary';
+                    
+                    // 根据预订状态设置不同的边框颜色
+                    if (booking.status === 'leave') {
+                        courseElement.classList.remove('border-secondary');
+                        courseElement.classList.add('border-yellow-400');
                     }
-                } else if (status === 'cancelled') {
-                    // 模拟显示已取消的预订
-                    // 创建一个已取消的预订项
-                    const cancelledBooking = document.createElement('div');
-                    cancelledBooking.className = 'booking-item bg-white rounded-lg shadow-card p-4';
-                    cancelledBooking.innerHTML = `
-                        <div class="flex flex-col md:flex-row md:items-center justify-between">
+                    
+                    courseElement.innerHTML = `
+                        <div class="flex justify-between items-start">
                             <div>
-                                <h3 class="text-lg font-semibold text-primary">现代舞进阶班</h3>
+                                <h4 class="font-semibold text-primary">${course.name[currentLanguage]}</h4>
                                 <p class="text-sm text-gray-600">
-                                    <i class="fa fa-calendar mr-1"></i> 2025年7月18日 (周四) 20:00-21:30
+                                    <i class="fa fa-clock-o mr-1"></i> ${course.schedule[0].time}
                                 </p>
                                 <p class="text-sm text-gray-600">
-                                    <i class="fa fa-user mr-1"></i> 李老师
+                                    <i class="fa fa-user mr-1"></i> ${course.teacher}
                                 </p>
                             </div>
-                            <div class="mt-3 md:mt-0">
-                                <span class="px-3 py-1 bg-red-100 text-red-800 text-sm rounded-full self-start">
-                                    <i class="fa fa-times-circle mr-1"></i> 
-                                    <span data-i18n="bookings.cancelled">已取消</span>
+                            <div class="flex flex-col gap-2">
+                                <span class="px-3 py-1 ${booking.status === 'leave' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'} text-sm rounded-full">
+                                    <i class="fa fa-${booking.status === 'leave' ? 'clock-o' : 'check-circle'} mr-1"></i> 
+                                    ${booking.status === 'leave' ? translations[currentLanguage]['bookings.leave'] : translations[currentLanguage]['bookings.confirmed']}
                                 </span>
+                                ${booking.status !== 'cancelled' ? `
+                                    <button class="btn-danger text-xs" onclick="confirmAction(${booking.id}, 'cancel')">
+                                        <i class="fa fa-times mr-1"></i> ${translations[currentLanguage]['bookings.cancel']}
+                                    </button>
+                                    ${booking.status !== 'leave' ? `
+                                        <button class="btn-secondary text-xs" onclick="confirmAction(${booking.id}, 'leave')">
+                                            <i class="fa fa-calendar-minus-o mr-1"></i> ${translations[currentLanguage]['bookings.absent']}
+                                        </button>
+                                    ` : ''}
+                                ` : ''}
                             </div>
                         </div>
                     `;
                     
-                    // 清空列表并添加已取消的预订
-                    bookingsList.innerHTML = '';
-                    bookingsList.appendChild(cancelledBooking);
-                    
-                    // 更新翻译
-                    updateLanguage(currentLanguage);
-                    return;
+                    todayCoursesContainer.appendChild(courseElement);
                 }
             });
         }
+
+        // 渲染课程列表
+        function renderCourses() {
+            const coursesGrid = document.getElementById('courses-grid');
+            const searchInput = document.getElementById('courses-search').value.toLowerCase();
+            const filterValue = document.getElementById('course-filter').value;
+            
+            // 筛选课程
+            let filteredCourses = courses;
+            
+            // 应用搜索筛选
+            if (searchInput) {
+                filteredCourses = filteredCourses.filter(course => 
+                    course.name[currentLanguage].toLowerCase().includes(searchInput) ||
+                    course.description[currentLanguage].toLowerCase().includes(searchInput) ||
+                    course.teacher.toLowerCase().includes(searchInput)
+                );
+            }
+            
+            // 应用类型筛选
+            if (filterValue !== 'all') {
+                filteredCourses = filteredCourses.filter(course => course.type === filterValue);
+            }
+            
+            if (filteredCourses.length === 0) {
+                coursesGrid.innerHTML = `
+                    <div class="col-span-full text-center py-8 text-gray-500">
+                        <i class="fa fa-search text-3xl mb-2"></i>
+                        <p>${translations[currentLanguage]['bookings.noBookings']}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // 渲染课程卡片
+            coursesGrid.innerHTML = '';
+            filteredCourses.forEach(course => {
+                const courseCard = document.createElement('div');
+                courseCard.className = 'course-card bg-white rounded-lg shadow-card overflow-hidden';
+                
+                // 获取课程的星期几
+                const dayNames = [
+                    { 'zh-CN': '周日', 'zh-TW': '周日', 'en-US': 'Sunday' },
+                    { 'zh-CN': '周一', 'zh-TW': '週一', 'en-US': 'Monday' },
+                    { 'zh-CN': '周二', 'zh-TW': '週二', 'en-US': 'Tuesday' },
+                    { 'zh-CN': '周三', 'zh-TW': '週三', 'en-US': 'Wednesday' },
+                    { 'zh-CN': '周四', 'zh-TW': '週四', 'en-US': 'Thursday' },
+                    { 'zh-CN': '周五', 'zh-TW': '週五', 'en-US': 'Friday' },
+                    { 'zh-CN': '周六', 'zh-TW': '週六', 'en-US': 'Saturday' }
+                ];
+                
+                const scheduleDay = course.schedule[0].day;
+                const dayName = dayNames[scheduleDay][currentLanguage];
+                
+                courseCard.innerHTML = `
+                    <div class="bg-primary text-white p-4">
+                        <h3 class="font-bold text-lg">${course.name[currentLanguage]}</h3>
+                        <p class="text-sm opacity-80">${dayName} ${course.schedule[0].time}</p>
+                    </div>
+                    <div class="p-4">
+                        <p class="text-gray-600 mb-3">${course.description[currentLanguage]}</p>
+                        <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
+                            <span><i class="fa fa-user mr-1"></i> ${course.teacher}</span>
+                            <span><i class="fa fa-users mr-1"></i> ${translations[currentLanguage]['courses.level.' + course.level]}</span>
+                            <span><i class="fa fa-signal mr-1"></i> ${course.capacity} ${translations[currentLanguage]['app.title']}</span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="btn-primary flex-1" onclick="openBookingModal(${course.id})">
+                                <i class="fa fa-calendar-plus-o mr-1"></i> ${translations[currentLanguage]['courses.bookNow']}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                coursesGrid.appendChild(courseCard);
+            });
+        }
+
+        // 筛选预订列表
+        function filterBookings(status) {
+            const bookingsList = document.getElementById('bookings-list');
+            const todayString = today.toISOString().split('T')[0];
+            
+            // 更新标签样式
+            bookingTabs.forEach(tab => {
+                if (tab.getAttribute('data-status') === status) {
+                    tab.classList.add('border-secondary', 'text-secondary');
+                    tab.classList.remove('border-transparent', 'text-gray-500');
+                } else {
+                    tab.classList.remove('border-secondary', 'text-secondary');
+                    tab.classList.add('border-transparent', 'text-gray-500');
+                }
+            });
+            
+            // 筛选预订
+            let filteredBookings = [];
+            
+            if (status === 'upcoming') {
+                filteredBookings = bookings.filter(booking => 
+                    booking.date >= todayString && booking.status !== 'cancelled'
+                );
+            } else if (status === 'past') {
+                filteredBookings = bookings.filter(booking => 
+                    booking.date < todayString && booking.status !== 'cancelled'
+                );
+            } else if (status === 'cancelled') {
+                filteredBookings = bookings.filter(booking => booking.status === 'cancelled');
+            }
+            
+            // 按日期排序
+            filteredBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            if (filteredBookings.length === 0) {
+                bookingsList.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fa fa-calendar-o text-3xl mb-2"></i>
+                        <p>${translations[currentLanguage]['bookings.noBookings']}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // 渲染预订列表
+            bookingsList.innerHTML = '';
+            filteredBookings.forEach(booking => {
+                const course = courses.find(c => c.id === booking.courseId);
+                if (course) {
+                    const bookingItem = document.createElement('div');
+                    bookingItem.className = 'booking-item bg-white rounded-lg shadow-card p-4';
+                    
+                    // 格式化日期
+                    const bookingDate = new Date(booking.date);
+                    const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+                    const dayNamesEn = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                    const dayNamesTw = ['周日', '週一', '週二', '週三', '週四', '週五', '週六'];
+                    
+                    let dayName;
+                    if (currentLanguage === 'en-US') {
+                        dayName = dayNamesEn[bookingDate.getDay()];
+                    } else if (currentLanguage === 'zh-TW') {
+                        dayName = dayNamesTw[bookingDate.getDay()];
+                    } else {
+                        dayName = dayNames[bookingDate.getDay()];
+                    }
+                    
+                    const dateString = currentLanguage === 'en-US' 
+                        ? `${bookingDate.getMonth() + 1}/${bookingDate.getDate()}/${bookingDate.getFullYear()} (${dayName})`
+                        : `${bookingDate.getFullYear()}年${bookingDate.getMonth() + 1}月${bookingDate.getDate()}日 (${dayName})`;
+                    
+                    // 查找课程在这一天的具体时间
+                    const dayOfWeek = bookingDate.getDay();
+                    const schedule = course.schedule.find(s => s.day === dayOfWeek);
+                    const time = schedule ? schedule.time : '';
+                    
+                    bookingItem.innerHTML = `
+                        <div class="flex flex-col md:flex-row md:items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-primary">${course.name[currentLanguage]}</h3>
+                                <p class="text-sm text-gray-600">
+                                    <i class="fa fa-calendar mr-1"></i> ${dateString} ${time}
+                                </p>
+                                <p class="text-sm text-gray-600">
+                                    <i class="fa fa-user mr-1"></i> ${course.teacher}
+                                </p>
+                            </div>
+                            <div class="mt-3 md:mt-0 flex flex-col sm:flex-row gap-2">
+                                <span class="px-3 py-1 ${
+                                    booking.status === 'confirmed' ? 'bg-green-100 text-green-800' : 
+                                    booking.status === 'leave' ? 'bg-yellow-100 text-yellow-800' : 
+                                    'bg-red-100 text-red-800'
+                                } text-sm rounded-full self-start">
+                                    <i class="fa fa-${
+                                        booking.status === 'confirmed' ? 'check-circle' : 
+                                        booking.status === 'leave' ? 'clock-o' : 
+                                        'times-circle'
+                                    } mr-1"></i> 
+                                    ${
+                                        booking.status === 'confirmed' ? translations[currentLanguage]['bookings.confirmed'] : 
+                                        booking.status === 'leave' ? translations[currentLanguage]['bookings.leave'] : 
+                                        translations[currentLanguage]['bookings.cancelled']
+                                    }
+                                </span>
+                                ${booking.status !== 'cancelled' ? `
+                                    <button class="btn-danger text-sm" onclick="confirmAction(${booking.id}, 'cancel')">
+                                        <i class="fa fa-times mr-1"></i> ${translations[currentLanguage]['bookings.cancel']}
+                                    </button>
+                                    ${booking.status !== 'leave' ? `
+                                        <button class="btn-secondary text-sm" onclick="confirmAction(${booking.id}, 'leave')">
+                                            <i class="fa fa-calendar-minus-o mr-1"></i> ${translations[currentLanguage]['bookings.absent']}
+                                        </button>
+                                    ` : ''}
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                    
+                    bookingsList.appendChild(bookingItem);
+                }
+            });
+        }
+
+        // 填充课程选择下拉框
+        function populateCourseSelect() {
+            courseSelect.innerHTML = '';
+            
+            courses.forEach(course => {
+                const option = document.createElement('option');
+                option.value = course.id;
+                option.textContent = course.name[currentLanguage];
+                courseSelect.appendChild(option);
+            });
+        }
+
+        // 打开预订模态框
+        function openBookingModal(courseId = null) {
+            // 如果指定了课程ID，则选择该课程
+            if (courseId) {
+                courseSelect.value = courseId;
+            }
+            
+            // 重置表单
+            document.getElementById('booking-form').reset();
+            adHocDateDiv.classList.add('hidden');
+            
+            // 显示模态框
+            bookingModal.classList.remove('hidden');
+        }
+
+        // 关闭预订模态框
+        function closeBookingModalFunc() {
+            bookingModal.classList.add('hidden');
+        }
+
+        // 提交预订表单
+        function submitBooking() {
+            // 获取表单数据
+            const selectedCourseId = parseInt(courseSelect.value);
+            const bookingType = document.querySelector('input[name="booking-type"]:checked').value;
+            const adHocDate = adHocDateInput.value;
+            
+            // 验证日期
+            let bookingDate = '';
+            if (bookingType === 'ad-hoc') {
+                if (!adHocDate) {
+                    showSuccessMessage(translations[currentLanguage]['error.invalidDate']);
+                    return;
+                }
+                bookingDate = adHocDate;
+            } else {
+                bookingDate = getNextCourseDate(selectedCourseId);
+            }
+            
+            // 检查是否已经预订了该课程
+            const alreadyBooked = bookings.some(booking => 
+                booking.courseId === selectedCourseId && 
+                booking.date === bookingDate && 
+                booking.status !== 'cancelled'
+            );
+            
+            if (alreadyBooked) {
+                showSuccessMessage(translations[currentLanguage]['error.alreadyBooked']);
+                return;
+            }
+            
+            // 创建新的预订
+            const newBooking = {
+                id: bookings.length > 0 ? Math.max(...bookings.map(b => b.id)) + 1 : 1,
+                userId: 'user123',
+                courseId: selectedCourseId,
+                date: bookingDate,
+                type: bookingType,
+                status: 'confirmed'
+            };
+            
+            // 添加到预订列表
+            bookings.push(newBooking);
+            
+            // 关闭模态框并显示成功消息
+            closeBookingModalFunc();
+            showSuccessMessage(translations[currentLanguage]['success.booking'] + '成功！');
+            
+            // 重新加载日历和预订列表
+            initCalendar();
+            if (currentPage === 'bookings') {
+                filterBookings('upcoming');
+            }
+        }
+
+        // 获取下一次课程的日期
+        function getNextCourseDate(courseId) {
+            const course = courses.find(c => c.id === courseId);
+            if (!course || course.schedule.length === 0) {
+                return today.toISOString().split('T')[0];
+            }
+            
+            // 使用全局的today变量，确保日期一致性
+            let nextDate = null;
+            
+            // 查找下一个课程日期（包括今天）
+            for (let i = 0; i < 7; i++) {
+                const checkDate = new Date(today);
+                checkDate.setDate(today.getDate() + i);
+                const dayOfWeek = checkDate.getDay();
+                
+                if (course.schedule.some(s => s.day === dayOfWeek)) {
+                    nextDate = checkDate;
+                    break;
+                }
+            }
+            
+            return nextDate ? nextDate.toISOString().split('T')[0] : today.toISOString().split('T')[0];
+        }
+
+        // 确认操作
+        function confirmAction(bookingId, action) {
+            selectedBookingId = bookingId;
+            currentAction = action;
+            
+            // 设置确认模态框内容
+            if (action === 'cancel') {
+                confirmTitle.textContent = translations[currentLanguage]['bookings.cancel'];
+                confirmMessage.textContent = translations[currentLanguage]['modal.booking.title'] + '？';
+            } else if (action === 'leave') {
+                confirmTitle.textContent = translations[currentLanguage]['bookings.absent'];
+                confirmMessage.textContent = translations[currentLanguage]['modal.booking.title'] + '？';
+            }
+            
+            // 显示确认模态框
+            confirmModal.classList.remove('hidden');
+        }
+
+        // 关闭确认模态框
+        function closeConfirmModal() {
+            confirmModal.classList.add('hidden');
+            selectedBookingId = null;
+            currentAction = '';
+        }
+
+        // 执行确认的操作
+        function executeConfirmedAction() {
+            if (!selectedBookingId || !currentAction) {
+                closeConfirmModal();
+                return;
+            }
+            
+            const bookingIndex = bookings.findIndex(b => b.id === selectedBookingId);
+            if (bookingIndex === -1) {
+                closeConfirmModal();
+                return;
+            }
+            
+            if (currentAction === 'cancel') {
+                bookings[bookingIndex].status = 'cancelled';
+                showSuccessMessage(translations[currentLanguage]['success.cancel'] + '成功！');
+            } else if (currentAction === 'leave') {
+                bookings[bookingIndex].status = 'leave';
+                showSuccessMessage(translations[currentLanguage]['success.leave'] + '成功！');
+            }
+            
+            // 关闭确认模态框
+            closeConfirmModal();
+            
+            // 重新加载日历和预订列表
+            initCalendar();
+            if (currentPage === 'bookings') {
+                filterBookings('upcoming');
+            }
+        }
+
+        // 显示成功消息
+        function showSuccessMessage(message) {
+            successText.textContent = message;
+            successMessage.classList.remove('translate-x-full');
+            
+            setTimeout(() => {
+                successMessage.classList.add('translate-x-full');
+            }, 3000);
+        }
+
+        // 保存个人资料
+        function saveProfile() {
+            const userName = document.getElementById('user-name').value;
+            if (userName.trim()) {
+                // 更新用户信息
+                bookings.forEach(booking => {
+                    if (booking.userId === 'user123') {
+                        booking.userName = userName;
+                    }
+                });
+                showSuccessMessage(translations[currentLanguage]['success.update'] + '成功！');
+            }
+        }
+
+        // 保存通知设置
+        function saveNotifications() {
+            showSuccessMessage(translations[currentLanguage]['success.update'] + '成功！');
+        }
+
+        // 渲染老师课程报名汇总
+        function renderTeacherSummary() {
+            const courseStatsContainer = document.getElementById('course-stats');
+            const courseDetailsContainer = document.getElementById('course-details');
+            
+            // 清空容器
+            courseStatsContainer.innerHTML = '';
+            courseDetailsContainer.innerHTML = '';
+            
+            // 计算每个课程的报名统计
+            courses.forEach(course => {
+                // 查找该课程的所有有效报名（不包括已取消的）
+                const courseBookings = bookings.filter(booking => 
+                    booking.courseId === course.id && booking.status !== 'cancelled'
+                );
+                
+                // 计算统计信息
+                const totalCapacity = course.capacity;
+                const bookedCount = courseBookings.length;
+                const remainingCount = totalCapacity - bookedCount;
+                
+                // 渲染课程统计卡片
+                const statsCard = document.createElement('div');
+                statsCard.className = 'bg-white rounded-lg shadow-sm p-4 border-l-4 border-primary';
+                statsCard.innerHTML = `
+                    <h4 class="font-semibold text-primary">${course.name[currentLanguage]}</h4>
+                    <div class="flex justify-between mt-3 text-sm">
+                        <div class="text-center">
+                            <p class="text-gray-600" data-i18n="teacherSummary.total">${translations[currentLanguage]['teacherSummary.total']}</p>
+                            <p class="font-bold text-primary">${totalCapacity}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-600" data-i18n="teacherSummary.booked">${translations[currentLanguage]['teacherSummary.booked']}</p>
+                            <p class="font-bold text-secondary">${bookedCount}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-600" data-i18n="teacherSummary.remaining">${translations[currentLanguage]['teacherSummary.remaining']}</p>
+                            <p class="font-bold text-success">${remainingCount}</p>
+                        </div>
+                    </div>
+                `;
+                courseStatsContainer.appendChild(statsCard);
+                
+                // 渲染学员详情卡片
+                const detailsCard = document.createElement('div');
+                detailsCard.className = 'bg-white rounded-lg shadow-sm p-4';
+                detailsCard.innerHTML = `
+                    <h4 class="font-semibold text-primary mb-3">${course.name[currentLanguage]}</h4>
+                    <div class="space-y-2">
+                        ${courseBookings.length > 0 ? courseBookings.map(booking => `
+                            <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                <div>
+                                    <p class="font-medium">张三</p>
+                                    <p class="text-xs text-gray-500">${booking.date} - ${booking.status === 'confirmed' ? translations[currentLanguage]['bookings.confirmed'] : translations[currentLanguage]['bookings.leave']}</p>
+                                </div>
+                                <span class="px-2 py-1 text-xs rounded-full ${
+                                    booking.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                                }">
+                                    ${booking.status === 'confirmed' ? translations[currentLanguage]['bookings.confirmed'] : translations[currentLanguage]['bookings.leave']}
+                                </span>
+                            </div>
+                        `).join('') : `
+                            <div class="text-center py-3 text-gray-500" data-i18n="teacherSummary.noBookings">
+                                ${translations[currentLanguage]['teacherSummary.noBookings']}
+                            </div>
+                        `}
+                    </div>
+                `;
+                courseDetailsContainer.appendChild(detailsCard);
+            });
+        }
+
+
+
+        // 渲染老师课程报名汇总
+        function renderTeacherSummary() {
+            const courseStatsContainer = document.getElementById('course-stats');
+            const courseDetailsContainer = document.getElementById('course-details');
+            
+            // 清空容器
+            courseStatsContainer.innerHTML = '';
+            courseDetailsContainer.innerHTML = '';
+            
+            // 计算每个课程的报名统计
+            courses.forEach(course => {
+                // 查找该课程的所有有效报名（不包括已取消的）
+                const courseBookings = bookings.filter(booking => 
+                    booking.courseId === course.id && booking.status !== 'cancelled'
+                );
+                
+                // 计算统计信息
+                const totalCapacity = course.capacity;
+                const bookedCount = courseBookings.length;
+                const remainingCount = totalCapacity - bookedCount;
+                
+                // 渲染课程统计卡片
+                const statsCard = document.createElement('div');
+                statsCard.className = 'bg-white rounded-lg shadow-sm p-4 border-l-4 border-primary';
+                statsCard.innerHTML = `
+                    <h4 class="font-semibold text-primary">${course.name[currentLanguage]}</h4>
+                    <div class="flex justify-between mt-3 text-sm">
+                        <div class="text-center">
+                            <p class="text-gray-600" data-i18n="teacherSummary.total">${translations[currentLanguage]['teacherSummary.total']}</p>
+                            <p class="font-bold text-primary">${totalCapacity}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-600" data-i18n="teacherSummary.booked">${translations[currentLanguage]['teacherSummary.booked']}</p>
+                            <p class="font-bold text-secondary">${bookedCount}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-600" data-i18n="teacherSummary.remaining">${translations[currentLanguage]['teacherSummary.remaining']}</p>
+                            <p class="font-bold text-success">${remainingCount}</p>
+                        </div>
+                    </div>
+                `;
+                courseStatsContainer.appendChild(statsCard);
+                
+                // 渲染学员详情卡片
+                const detailsCard = document.createElement('div');
+                detailsCard.className = 'bg-white rounded-lg shadow-sm p-4';
+                detailsCard.innerHTML = `
+                    <h4 class="font-semibold text-primary mb-3">${course.name[currentLanguage]}</h4>
+                    <div class="space-y-2">
+                        ${courseBookings.length > 0 ? courseBookings.map(booking => `
+                            <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                <div>
+                                    <p class="font-medium">${booking.userName || '张三'}</p>
+                                    <p class="text-xs text-gray-500">${booking.date} - ${booking.status === 'confirmed' ? translations[currentLanguage]['bookings.confirmed'] : translations[currentLanguage]['bookings.leave']}</p>
+                                </div>
+                                <span class="px-2 py-1 text-xs rounded-full ${
+                                    booking.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                                }">
+                                    ${booking.status === 'confirmed' ? translations[currentLanguage]['bookings.confirmed'] : translations[currentLanguage]['bookings.leave']}
+                                </span>
+                            </div>
+                        `).join('') : `
+                            <div class="text-center py-3 text-gray-500" data-i18n="teacherSummary.noBookings">
+                                ${translations[currentLanguage]['teacherSummary.noBookings']}
+                            </div>
+                        `}
+                    </div>
+                `;
+                courseDetailsContainer.appendChild(detailsCard);
+            });
+        }
+
+        // 全局函数，用于从HTML中调用
+        window.confirmAction = confirmAction;
+        window.openBookingModal = openBookingModal;
     </script>
 </body>
 </html>
