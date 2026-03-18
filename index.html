@@ -237,26 +237,6 @@
                 <h3 class="text-xl font-semibold text-primary mb-4" data-i18n="calendar.todayCourses">今日课程</h3>
                 <div id="today-courses" class="space-y-3">
                     <!-- 今日课程将通过JavaScript动态生成 -->
-                    <div class="course-card p-3 border rounded-lg flex justify-between items-center">
-                        <div>
-                            <h4 class="font-medium text-primary">芭蕾基础班</h4>
-                            <p class="text-sm text-gray-600">18:00-19:30 | 张老师</p>
-                        </div>
-                        <div class="flex space-x-2">
-                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">可预订</span>
-                            <button class="btn-accent text-sm">预订</button>
-                        </div>
-                    </div>
-                    <div class="course-card p-3 border rounded-lg flex justify-between items-center">
-                        <div>
-                            <h4 class="font-medium text-primary">现代舞进阶班</h4>
-                            <p class="text-sm text-gray-600">20:00-21:30 | 李老师</p>
-                        </div>
-                        <div class="flex space-x-2">
-                            <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">已满</span>
-                            <button class="btn-secondary text-sm opacity-50 cursor-not-allowed">等待名单</button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
@@ -272,10 +252,7 @@
                     </div>
                     <select id="course-filter" class="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary">
                         <option value="all" data-i18n="courses.filter.all">所有课程</option>
-                        <option value="ballet" data-i18n="courses.filter.ballet">芭蕾舞</option>
-                        <option value="modern" data-i18n="courses.filter.modern">现代舞</option>
-                        <option value="jazz" data-i18n="courses.filter.jazz">爵士舞</option>
-                        <option value="contemporary" data-i18n="courses.filter.contemporary">当代舞</option>
+                        <option value="latin" data-i18n="courses.filter.latin">拉丁舞</option>
                     </select>
                 </div>
             </div>
@@ -283,101 +260,6 @@
             <!-- 课程卡片网格 -->
             <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- 课程卡片将通过JavaScript动态生成 -->
-                <div class="course-card bg-white rounded-lg shadow-card overflow-hidden">
-                    <div class="h-40 bg-primary relative">
-                        <div class="absolute inset-0 flex items-center justify-center text-white text-center p-4">
-                            <h3 class="text-xl font-bold">芭蕾基础班</h3>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <div class="flex items-center mb-2">
-                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">芭蕾舞</span>
-                            <span class="ml-2 text-sm text-gray-600">
-                                <i class="fa fa-user mr-1"></i> 张老师
-                            </span>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-3">
-                            <i class="fa fa-clock-o mr-1"></i> 
-                            <span data-i18n="courses.schedule">课程时间：</span>周一、周三 18:00-19:30
-                        </p>
-                        <p class="text-sm text-gray-600 mb-3">
-                            <i class="fa fa-users mr-1"></i> 
-                            <span data-i18n="courses.capacity">容量：</span>15人 (已预订8人)
-                        </p>
-                        <p class="text-sm text-gray-600 mb-4">
-                            <i class="fa fa-info-circle mr-1"></i> 
-                            <span data-i18n="courses.level">级别：</span>初级
-                        </p>
-                        <div class="flex justify-between">
-                            <button class="btn-primary text-sm" data-i18n="courses.bookNow">立即预订</button>
-                            <button class="text-secondary hover:text-primary transition-all-300" data-i18n="courses.details">详情</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="course-card bg-white rounded-lg shadow-card overflow-hidden">
-                    <div class="h-40 bg-primary relative">
-                        <div class="absolute inset-0 flex items-center justify-center text-white text-center p-4">
-                            <h3 class="text-xl font-bold">现代舞进阶班</h3>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <div class="flex items-center mb-2">
-                            <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">现代舞</span>
-                            <span class="ml-2 text-sm text-gray-600">
-                                <i class="fa fa-user mr-1"></i> 李老师
-                            </span>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-3">
-                            <i class="fa fa-clock-o mr-1"></i> 
-                            <span data-i18n="courses.schedule">课程时间：</span>周二、周四 20:00-21:30
-                        </p>
-                        <p class="text-sm text-gray-600 mb-3">
-                            <i class="fa fa-users mr-1"></i> 
-                            <span data-i18n="courses.capacity">容量：</span>12人 (已预订12人)
-                        </p>
-                        <p class="text-sm text-gray-600 mb-4">
-                            <i class="fa fa-info-circle mr-1"></i> 
-                            <span data-i18n="courses.level">级别：</span>中级
-                        </p>
-                        <div class="flex justify-between">
-                            <button class="btn-secondary text-sm opacity-50 cursor-not-allowed" data-i18n="courses.full">已满</button>
-                            <button class="text-secondary hover:text-primary transition-all-300" data-i18n="courses.details">详情</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="course-card bg-white rounded-lg shadow-card overflow-hidden">
-                    <div class="h-40 bg-primary relative">
-                        <div class="absolute inset-0 flex items-center justify-center text-white text-center p-4">
-                            <h3 class="text-xl font-bold">爵士舞周末班</h3>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <div class="flex items-center mb-2">
-                            <span class="px-2 py-1 bg-pink-100 text-pink-800 text-xs rounded-full">爵士舞</span>
-                            <span class="ml-2 text-sm text-gray-600">
-                                <i class="fa fa-user mr-1"></i> 王老师
-                            </span>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-3">
-                            <i class="fa fa-clock-o mr-1"></i> 
-                            <span data-i18n="courses.schedule">课程时间：</span>周六 14:00-16:00
-                        </p>
-                        <p class="text-sm text-gray-600 mb-3">
-                            <i class="fa fa-users mr-1"></i> 
-                            <span data-i18n="courses.capacity">容量：</span>20人 (已预订15人)
-                        </p>
-                        <p class="text-sm text-gray-600 mb-4">
-                            <i class="fa fa-info-circle mr-1"></i> 
-                            <span data-i18n="courses.level">级别：</span>所有级别
-                        </p>
-                        <div class="flex justify-between">
-                            <button class="btn-primary text-sm" data-i18n="courses.bookNow">立即预订</button>
-                            <button class="text-secondary hover:text-primary transition-all-300" data-i18n="courses.details">详情</button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </section>
 
