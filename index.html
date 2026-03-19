@@ -701,7 +701,10 @@
             
             // 当前选中的预订ID（用于确认操作）
             selectedBookingId: null,
-            selectedAction: null
+            selectedAction: null,
+            
+            // 当前用户ID（模拟）
+            currentUserId: 'user123'
         };
 
         // 翻译数据（保持不变）
@@ -1056,7 +1059,7 @@
             successText: document.getElementById('success-text')
         };
 
-        // 初始化应用
+        // ==================== 初始化应用 ====================
         function initApp() {
             // 初始化语言
             updateLanguage();
@@ -1338,21 +1341,17 @@
             renderTodayCourses();
         }
 
-        // 渲染今日课程
+        // 渲染今日课程（改进版：显示所有今天有课的课程及报名情况）
         function renderTodayCourses() {
-            const todayString = getLocalDateString(appData.today);  // 使用本地日期字符串
+            const todayString = getLocalDateString(appData.today);
             const todayDayOfWeek = appData.today.getDay();
             
-            // 查找今天的预订课程
-            const todayBookings = appData.bookings.filter(booking => {
-                if (booking.date === todayString && booking.status !== 'cancelled') {
-                    const course = appData.courses.find(c => c.id === booking.courseId);
-                    return course && course.schedule.some(s => s.day === todayDayOfWeek);
-                }
-                return false;
-            });
+            // 找出今天有课的所有课程（根据课程表）
+            const todayCourses = appData.courses.filter(course => 
+                course.schedule.some(s => s.day === todayDayOfWeek)
+            );
             
-            if (todayBookings.length === 0) {
+            if (todayCourses.length === 0) {
                 elements.todayCourses.innerHTML = `
                     <div class="text-center py-4 text-gray-500">
                         <i class="fa fa-calendar-o text-2xl mb-2"></i>
@@ -1364,45 +1363,58 @@
             
             // 渲染今日课程列表
             elements.todayCourses.innerHTML = '';
-            todayBookings.forEach(booking => {
-                const course = appData.courses.find(c => c.id === booking.courseId);
-                if (course) {
-                    const courseElement = document.createElement('div');
-                    courseElement.className = 'bg-white rounded-lg shadow-sm p-3 border-l-4 border-secondary';
-                    
-                    // 根据预订状态设置不同的边框颜色
-                    if (booking.status === 'leave') {
-                        courseElement.classList.remove('border-secondary');
-                        courseElement.classList.add('border-yellow-400');
-                    }
-                    
-                    courseElement.innerHTML = `
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-semibold text-primary">${course.name[appData.currentLanguage]}</h4>
-                                <p class="text-sm text-gray-600 mt-1">
-                                    <i class="fa fa-clock-o mr-1"></i> ${course.schedule[0].time}
-                                </p>
-                                <p class="text-sm text-gray-600">
-                                    <i class="fa fa-user mr-1"></i> ${course.teacher}
-                                </p>
-                            </div>
-                            <div class="flex flex-col gap-2">
-                                <span class="px-2 py-1 text-xs rounded-full ${
-                                    booking.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                                }">
-                                    ${booking.status === 'confirmed' ? translations[appData.currentLanguage]['bookings.confirmed'] : translations[appData.currentLanguage]['bookings.leave']}
-                                </span>
-                                ${booking.status !== 'leave' ? `
-                                    <button class="btn-danger text-xs" onclick="confirmAction(${booking.id}, 'leave')">
-                                        <i class="fa fa-calendar-minus-o mr-1"></i> ${translations[appData.currentLanguage]['bookings.absent']}
-                                    </button>
-                                ` : ''}
-                            </div>
+            todayCourses.forEach(course => {
+                // 获取今天这节课的具体时间
+                const schedule = course.schedule.find(s => s.day === todayDayOfWeek);
+                const time = schedule ? schedule.time : '';
+                
+                // 统计今天的报名情况（排除已取消的）
+                const todayBookings = appData.bookings.filter(booking => 
+                    booking.courseId === course.id && 
+                    booking.date === todayString && 
+                    booking.status !== 'cancelled'
+                );
+                
+                const bookedCount = todayBookings.length;
+                const remainingCount = course.capacity - bookedCount;
+                
+                // 检查当前用户是否已预订（包括请假）
+                const userBooking = todayBookings.find(b => b.userId === appData.currentUserId);
+                const userStatus = userBooking ? userBooking.status : null;
+                
+                const courseElement = document.createElement('div');
+                courseElement.className = 'bg-white rounded-lg shadow-sm p-4 border-l-4 border-secondary mb-3';
+                courseElement.innerHTML = `
+                    <div class="flex flex-col md:flex-row md:items-center justify-between">
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-primary">${course.name[appData.currentLanguage]}</h4>
+                            <p class="text-sm text-gray-600 mt-1">
+                                <i class="fa fa-clock-o mr-1"></i> ${time}
+                            </p>
+                            <p class="text-sm text-gray-600">
+                                <i class="fa fa-user mr-1"></i> ${course.teacher}
+                            </p>
                         </div>
-                    `;
-                    elements.todayCourses.appendChild(courseElement);
-                }
+                        <div class="mt-2 md:mt-0 flex items-center gap-4">
+                            <div class="text-sm">
+                                <span class="text-gray-600">${translations[appData.currentLanguage]['teacherSummary.booked']}:</span>
+                                <span class="font-semibold ${bookedCount >= course.capacity ? 'text-danger' : 'text-success'}">${bookedCount}/${course.capacity}</span>
+                            </div>
+                            ${userStatus ? `
+                                <span class="px-2 py-1 text-xs rounded-full ${
+                                    userStatus === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                                }">
+                                    ${userStatus === 'confirmed' ? translations[appData.currentLanguage]['bookings.confirmed'] : translations[appData.currentLanguage]['bookings.leave']}
+                                </span>
+                            ` : `
+                                <button class="btn-primary text-sm" onclick="openBookingModal(${course.id})">
+                                    <i class="fa fa-calendar-plus-o mr-1"></i> ${translations[appData.currentLanguage]['courses.bookNow']}
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+                elements.todayCourses.appendChild(courseElement);
             });
         }
 
@@ -1473,7 +1485,7 @@
 
         // 筛选预订列表
         function filterBookings(status) {
-            const todayString = getLocalDateString(appData.today);  // 使用本地日期字符串
+            const todayString = getLocalDateString(appData.today);
             
             // 更新标签样式
             elements.bookingTabs.forEach(tab => {
@@ -1486,23 +1498,29 @@
                 }
             });
             
-            // 筛选预订
-            let filteredBookings = [];
+            // 筛选预订（只显示当前用户的）
+            let filteredBookings = appData.bookings.filter(b => b.userId === appData.currentUserId);
             
             if (status === 'upcoming') {
-                filteredBookings = appData.bookings.filter(booking => 
+                filteredBookings = filteredBookings.filter(booking => 
                     booking.date >= todayString && booking.status !== 'cancelled'
                 );
             } else if (status === 'past') {
-                filteredBookings = appData.bookings.filter(booking => 
+                filteredBookings = filteredBookings.filter(booking => 
                     booking.date < todayString && booking.status !== 'cancelled'
                 );
             } else if (status === 'cancelled') {
-                filteredBookings = appData.bookings.filter(booking => booking.status === 'cancelled');
+                filteredBookings = filteredBookings.filter(booking => booking.status === 'cancelled');
             }
             
-            // 按日期排序
-            filteredBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+            // 按日期排序（即将到来按日期升序，过去按降序）
+            filteredBookings.sort((a, b) => {
+                if (status === 'upcoming') {
+                    return new Date(a.date) - new Date(b.date);
+                } else {
+                    return new Date(b.date) - new Date(a.date);
+                }
+            });
             
             renderBookingsList(filteredBookings);
         }
@@ -1512,7 +1530,7 @@
             filterBookings('upcoming');
         }
 
-        // 渲染预订列表内容
+        // 渲染预订列表内容（改进版：修复日期解析和时间显示）
         function renderBookingsList(bookings) {
             if (bookings.length === 0) {
                 elements.bookingsList.innerHTML = `
@@ -1524,85 +1542,84 @@
                 return;
             }
             
-            // 渲染预订列表
             elements.bookingsList.innerHTML = '';
             bookings.forEach(booking => {
                 const course = appData.courses.find(c => c.id === booking.courseId);
-                if (course) {
-                    const bookingItem = document.createElement('div');
-                    bookingItem.className = 'booking-item bg-white rounded-lg shadow-card p-4 mb-3';
-                    
-                    // 格式化日期
-                    const bookingDate = new Date(booking.date + 'T00:00:00'); // 确保按本地日期解析
-                    const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-                    const dayNamesEn = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                    const dayNamesTw = ['周日', '週一', '週二', '週三', '週四', '週五', '週六'];
-                    
-                    let dayName;
-                    if (appData.currentLanguage === 'en-US') {
-                        dayName = dayNamesEn[bookingDate.getDay()];
-                    } else if (appData.currentLanguage === 'zh-TW') {
-                        dayName = dayNamesTw[bookingDate.getDay()];
-                    } else {
-                        dayName = dayNames[bookingDate.getDay()];
-                    }
-                    
-                    const dateString = appData.currentLanguage === 'en-US' 
-                        ? `${bookingDate.getMonth() + 1}/${bookingDate.getDate()}/${bookingDate.getFullYear()} (${dayName})`
-                        : `${bookingDate.getFullYear()}年${bookingDate.getMonth() + 1}月${bookingDate.getDate()}日 (${dayName})`;
-                    
-                    // 查找课程在这一天的具体时间
-                    const dayOfWeek = bookingDate.getDay();
-                    const schedule = course.schedule.find(s => s.day === dayOfWeek);
-                    const time = schedule ? schedule.time : '';
-                    
-                    bookingItem.innerHTML = `
-                        <div class="flex flex-col md:flex-row md:items-center justify-between">
-                            <div>
-                                <h3 class="text-lg font-semibold text-primary">${course.name[appData.currentLanguage]}</h3>
-                                <p class="text-sm text-gray-600 mt-1">
-                                    <i class="fa fa-calendar mr-1"></i> ${dateString}
-                                </p>
-                                <p class="text-sm text-gray-600">
-                                    <i class="fa fa-clock-o mr-1"></i> ${time}
-                                </p>
-                                <p class="text-sm text-gray-600">
-                                    <i class="fa fa-user mr-1"></i> ${course.teacher}
-                                </p>
-                            </div>
-                            <div class="mt-3 md:mt-0 flex flex-col sm:flex-row gap-2">
-                                <span class="px-3 py-1 ${
-                                    booking.status === 'confirmed' ? 'bg-green-100 text-green-800' : 
-                                    booking.status === 'leave' ? 'bg-yellow-100 text-yellow-800' : 
-                                    'bg-red-100 text-red-800'
-                                } text-sm rounded-full self-start">
-                                    <i class="fa fa-${
-                                        booking.status === 'confirmed' ? 'check-circle' : 
-                                        booking.status === 'leave' ? 'clock-o' : 
-                                        'times-circle'
-                                    } mr-1"></i> 
-                                    ${
-                                        booking.status === 'confirmed' ? translations[appData.currentLanguage]['bookings.confirmed'] : 
-                                        booking.status === 'leave' ? translations[appData.currentLanguage]['bookings.leave'] : 
-                                        translations[appData.currentLanguage]['bookings.cancelled']
-                                    }
-                                </span>
-                                ${booking.status !== 'cancelled' ? `
-                                    <button class="btn-danger text-sm" onclick="confirmAction(${booking.id}, 'cancel')">
-                                        <i class="fa fa-times mr-1"></i> ${translations[appData.currentLanguage]['bookings.cancel']}
-                                    </button>
-                                    ${booking.status !== 'leave' ? `
-                                        <button class="btn-secondary text-sm" onclick="confirmAction(${booking.id}, 'leave')">
-                                            <i class="fa fa-calendar-minus-o mr-1"></i> ${translations[appData.currentLanguage]['bookings.absent']}
-                                        </button>
-                                    ` : ''}
-                                ` : ''}
-                            </div>
-                        </div>
-                    `;
-                    
-                    elements.bookingsList.appendChild(bookingItem);
+                if (!course) return;
+                
+                // 使用中午12点解析日期，避免时区偏移（确保星期几正确）
+                const bookingDate = new Date(booking.date + 'T12:00:00');
+                const dayOfWeek = bookingDate.getDay();
+                
+                // 查找课程在这一天的具体时间
+                const schedule = course.schedule.find(s => s.day === dayOfWeek);
+                const time = schedule ? schedule.time : '时间待定';
+                
+                // 格式化日期显示
+                const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+                const dayNamesEn = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                const dayNamesTw = ['周日', '週一', '週二', '週三', '週四', '週五', '週六'];
+                
+                let dayName;
+                if (appData.currentLanguage === 'en-US') {
+                    dayName = dayNamesEn[bookingDate.getDay()];
+                } else if (appData.currentLanguage === 'zh-TW') {
+                    dayName = dayNamesTw[bookingDate.getDay()];
+                } else {
+                    dayName = dayNames[bookingDate.getDay()];
                 }
+                
+                const dateString = appData.currentLanguage === 'en-US' 
+                    ? `${bookingDate.getMonth() + 1}/${bookingDate.getDate()}/${bookingDate.getFullYear()} (${dayName})`
+                    : `${bookingDate.getFullYear()}年${bookingDate.getMonth() + 1}月${bookingDate.getDate()}日 (${dayName})`;
+                
+                const bookingItem = document.createElement('div');
+                bookingItem.className = 'booking-item bg-white rounded-lg shadow-card p-4 mb-3';
+                bookingItem.innerHTML = `
+                    <div class="flex flex-col md:flex-row md:items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-primary">${course.name[appData.currentLanguage]}</h3>
+                            <p class="text-sm text-gray-600 mt-1">
+                                <i class="fa fa-calendar mr-1"></i> ${dateString}
+                            </p>
+                            <p class="text-sm text-gray-600">
+                                <i class="fa fa-clock-o mr-1"></i> ${time}
+                            </p>
+                            <p class="text-sm text-gray-600">
+                                <i class="fa fa-user mr-1"></i> ${course.teacher}
+                            </p>
+                        </div>
+                        <div class="mt-3 md:mt-0 flex flex-col sm:flex-row gap-2">
+                            <span class="px-3 py-1 ${
+                                booking.status === 'confirmed' ? 'bg-green-100 text-green-800' : 
+                                booking.status === 'leave' ? 'bg-yellow-100 text-yellow-800' : 
+                                'bg-red-100 text-red-800'
+                            } text-sm rounded-full self-start">
+                                <i class="fa fa-${
+                                    booking.status === 'confirmed' ? 'check-circle' : 
+                                    booking.status === 'leave' ? 'clock-o' : 
+                                    'times-circle'
+                                } mr-1"></i> 
+                                ${
+                                    booking.status === 'confirmed' ? translations[appData.currentLanguage]['bookings.confirmed'] : 
+                                    booking.status === 'leave' ? translations[appData.currentLanguage]['bookings.leave'] : 
+                                    translations[appData.currentLanguage]['bookings.cancelled']
+                                }
+                            </span>
+                            ${booking.status !== 'cancelled' ? `
+                                <button class="btn-danger text-sm" onclick="confirmAction(${booking.id}, 'cancel')">
+                                    <i class="fa fa-times mr-1"></i> ${translations[appData.currentLanguage]['bookings.cancel']}
+                                </button>
+                                ${booking.status !== 'leave' ? `
+                                    <button class="btn-secondary text-sm" onclick="confirmAction(${booking.id}, 'leave')">
+                                        <i class="fa fa-calendar-minus-o mr-1"></i> ${translations[appData.currentLanguage]['bookings.absent']}
+                                    </button>
+                                ` : ''}
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                elements.bookingsList.appendChild(bookingItem);
             });
         }
 
@@ -1667,7 +1684,8 @@
             const alreadyBooked = appData.bookings.some(booking => 
                 booking.courseId === selectedCourseId && 
                 booking.date === bookingDate && 
-                booking.status !== 'cancelled'
+                booking.status !== 'cancelled' &&
+                booking.userId === appData.currentUserId
             );
             
             if (alreadyBooked) {
@@ -1675,7 +1693,7 @@
                 return;
             }
             
-            // 检查课程是否已满
+            // 检查课程是否已满（排除已取消的）
             const courseBookings = appData.bookings.filter(booking => 
                 booking.courseId === selectedCourseId && 
                 booking.date === bookingDate && 
@@ -1691,7 +1709,7 @@
             // 创建新的预订
             const newBooking = {
                 id: Date.now(),
-                userId: 'user123',
+                userId: appData.currentUserId,
                 userName: elements.userName.value,
                 courseId: selectedCourseId,
                 date: bookingDate,
@@ -1712,6 +1730,8 @@
                 renderCalendar();
             } else if (appData.currentPage === 'bookings-page') {
                 renderBookings();
+            } else if (appData.currentPage === 'courses-page') {
+                renderCourses();
             }
         }
 
@@ -1723,7 +1743,6 @@
             }
             
             const today = appData.today;
-            const todayDay = today.getDay();
             
             // 找到下一个课程日期
             let nextDate = new Date(today);
@@ -1744,7 +1763,7 @@
                 nextDate = new Date(today);
             }
             
-            return getLocalDateString(nextDate);  // 使用本地日期字符串
+            return getLocalDateString(nextDate);
         }
 
         // 确认操作
@@ -1792,9 +1811,11 @@
                 if (appData.currentPage === 'calendar-page') {
                     renderCalendar();
                 } else if (appData.currentPage === 'bookings-page') {
-                    renderBookings();
+                    renderBookings(); // 重新渲染当前标签页
                 } else if (appData.currentPage === 'teacher-summary-page') {
                     renderTeacherSummary();
+                } else if (appData.currentPage === 'courses-page') {
+                    renderCourses();
                 }
             }
             
@@ -1803,27 +1824,13 @@
 
         // 保存个人资料
         function saveProfile() {
-            const name = elements.userName.value;
-            const email = elements.userEmail.value;
-            const phone = elements.userPhone.value;
-            
-            // 更新用户信息
             // 这里只是模拟，实际应用中应该保存到数据库
-            
-            // 显示成功消息
             showSuccessMessage(translations[appData.currentLanguage]['success.update']);
         }
 
         // 保存通知设置
         function saveNotifications() {
-            const courseReminder = document.getElementById('course-reminder').checked;
-            const newCourse = document.getElementById('new-course').checked;
-            const promotion = document.getElementById('promotion').checked;
-            
-            // 更新通知设置
             // 这里只是模拟，实际应用中应该保存到数据库
-            
-            // 显示成功消息
             showSuccessMessage(translations[appData.currentLanguage]['success.update']);
         }
 
@@ -1879,7 +1886,7 @@
                         ${courseBookings.length > 0 ? courseBookings.map(booking => `
                             <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
                                 <div>
-                                    <p class="font-medium">${booking.userName || '张三'}</p>
+                                    <p class="font-medium">${booking.userName}</p>
                                     <p class="text-xs text-gray-500">${booking.date} - ${booking.status === 'confirmed' ? translations[appData.currentLanguage]['bookings.confirmed'] : translations[appData.currentLanguage]['bookings.leave']}</p>
                                 </div>
                                 <span class="px-2 py-1 text-xs rounded-full ${
